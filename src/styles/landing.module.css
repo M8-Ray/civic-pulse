@@ -109,8 +109,15 @@
 }
 
 @keyframes cursorBlink {
-  from, to { border-color: transparent }
-  50% { border-color: var(--accent-cyan) }
+
+  from,
+  to {
+    border-color: transparent
+  }
+
+  50% {
+    border-color: var(--accent-cyan)
+  }
 }
 
 /* CTA Group styling */
