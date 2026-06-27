@@ -2,74 +2,116 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame } from 'lucide-react';
+import { Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame, Camera, BarChart3 } from 'lucide-react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Footer from '@/components/Footer';
 import styles from '../styles/landing.module.css';
 import { useLocation } from '@/context/LocationContext';
-import { useAuth } from '@/context/AuthContext';
 
 export default function LandingPage() {
   const { userLocation, defaultLocation } = useLocation();
 
-  // Typewriter Animation logic
+  // Word Flip Animation logic
   const typewriterWords = ["potholes", "broken streetlights", "water leaks", "trash overflows", "clogged drains"];
   const [wordIndex, setWordIndex] = useState(0);
-  const [subIndex, setSubIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [typedText, setTypedText] = useState("");
 
   useEffect(() => {
-    if (subIndex === typewriterWords[wordIndex].length + 1 && !isDeleting) {
-      const timeout = setTimeout(() => setIsDeleting(true), 1600);
-      return () => clearTimeout(timeout);
-    }
-
-    if (subIndex === 0 && isDeleting) {
-      setIsDeleting(false);
+    const interval = setInterval(() => {
       setWordIndex((prev) => (prev + 1) % typewriterWords.length);
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      setSubIndex((prev) => prev + (isDeleting ? -1 : 1));
-    }, isDeleting ? 60 : 100);
-
-    return () => clearTimeout(timeout);
-  }, [subIndex, isDeleting, wordIndex]);
-
-  useEffect(() => {
-    setTypedText(typewriterWords[wordIndex].substring(0, subIndex));
-  }, [subIndex, wordIndex]);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [typewriterWords.length]);
 
   // Center coordinate reference to display hotspots
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
   const centerLng = userLocation?.lng ?? defaultLocation.lng;
 
+  // Animation Variants
+  const containerVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  };
+
+  const cardContainerVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 70,
+        damping: 15,
+      },
+    },
+  };
+
   return (
     <div className={styles.landingContainer}>
       <div className={styles.landingContent}>
         {/* HERO SECTION */}
-        <section className={styles.hero}>
-          <div className={styles.badge}>
+        <motion.section 
+          className={styles.hero}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div className={styles.badge} variants={itemVariants}>
             <Flame size={12} fill="currentColor" style={{ marginRight: '4px' }} />
             <span>Community Dashboard v1.0</span>
-          </div>
+          </motion.div>
 
-          <h1 className={styles.title}>
+          <motion.h1 className={styles.title} variants={itemVariants}>
             The live public registry
             <br />
             for community <span className={styles.gradientText}>issues.</span>
-          </h1>
+          </motion.h1>
 
-          <p className={styles.subtitle}>
+          <motion.p className={styles.subtitle} variants={itemVariants}>
             An open platform to report and track{' '}
             <span className={styles.typewriterContainer}>
-              <span className={styles.typewriterText}>{typedText}</span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={wordIndex}
+                  className={styles.typewriterText}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 18 }}
+                >
+                  {typewriterWords[wordIndex]}
+                </motion.span>
+              </AnimatePresence>
             </span>{' '}
             in real-time.
-          </p>
+          </motion.p>
 
-          <div className={styles.ctaGroup}>
+          <motion.div className={styles.ctaGroup} variants={itemVariants}>
             <Link href="/map" className={styles.btnPrimary}>
               <span>Launch Map Dashboard</span>
               <ArrowRight size={16} />
@@ -77,37 +119,79 @@ export default function LandingPage() {
             <Link href="/report" className={styles.btnSecondary}>
               <span>Report an Issue</span>
             </Link>
+          </motion.div>
+        </motion.section>
+
+        {/* HOW IT WORKS SECTION */}
+        <motion.section 
+          className={styles.howItWorksSection}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={cardContainerVariants}
+        >
+          <motion.h2 className={styles.howItWorksTitle} variants={cardVariants}>How it Works</motion.h2>
+          <motion.p className={styles.howItWorksSubtitle} variants={cardVariants}>
+            Simple steps to make a real difference in your neighborhood.
+          </motion.p>
+
+          <div className={styles.howItWorksGrid}>
+            <motion.div 
+              className={styles.howItWorksCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <div className={styles.iconCircle}>
+                <Camera size={20} className={styles.cardIcon} />
+              </div>
+              <h3 className={styles.cardTitle}>1. Snap a Photo</h3>
+              <p className={styles.cardDescription}>
+                Capture the issue clearly using our intuitive mobile interface. One photo says more than a thousand words.
+              </p>
+            </motion.div>
+
+            <motion.div 
+              className={styles.howItWorksCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <div className={styles.iconCircle}>
+                <MapPin size={20} className={styles.cardIcon} />
+              </div>
+              <h3 className={styles.cardTitle}>2. Pin the Location</h3>
+              <p className={styles.cardDescription}>
+                Our GPS-integrated map automatically tags the exact spot. Fine-tune it with a simple tap to ensure accuracy.
+              </p>
+            </motion.div>
+
+            <motion.div 
+              className={styles.howItWorksCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
+              <div className={styles.iconCircle}>
+                <BarChart3 size={20} className={styles.cardIcon} />
+              </div>
+              <h3 className={styles.cardTitle}>3. Track the Progress</h3>
+              <p className={styles.cardDescription}>
+                Watch as your report moves through the system. Get real-time updates when the issue is assigned and resolved.
+              </p>
+            </motion.div>
           </div>
-        </section>
-        {/* WORKFLOW PROCESS GUIDE (Editorial Broadsheet style) */}
-        <section className={styles.stepsRow}>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>01</span>
-            <h4 className={styles.stepTitle}>Upload Media</h4>
-            <p className={styles.stepDescription}>
-              Snap a photo or record video. Our vision models automatically categorize category and severity.
-            </p>
-          </div>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>02</span>
-            <h4 className={styles.stepTitle}>Confirm Location</h4>
-            <p className={styles.stepDescription}>
-              Automatic geo-tagging estimates the exact coordinates; drag the pin to adjust for accuracy.
-            </p>
-          </div>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>03</span>
-            <h4 className={styles.stepTitle}>Report</h4>
-            <p className={styles.stepDescription}>
-              Help the community by reporting issues and track their progress.
-            </p>
-          </div>
-        </section>
-        <span className={styles.stepsCaption}>Powered by community coordination & vision AI</span>
+        </motion.section>
 
         {/* VISUAL SPOTLIGHTS REGISTRY */}
-        <section className={styles.ledgerSection}>
-          <div className={styles.ledgerHeader}>
+        <motion.section 
+          className={styles.ledgerSection}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={cardContainerVariants}
+        >
+          <motion.div className={styles.ledgerHeader} variants={cardVariants}>
             <div className={styles.ledgerTitleGroup}>
               <h2 className={styles.ledgerTitle}>Local Spotlights</h2>
               <p className={styles.ledgerSubtitle}>Curated visual alerts of active repairs and resolutions near you</p>
@@ -116,11 +200,16 @@ export default function LandingPage() {
               <span>View full feed</span>
               <ArrowRight size={14} />
             </Link>
-          </div>
+          </motion.div>
 
           <div className={styles.spotlightGrid}>
             {/* CARD 1: PIPE BURST */}
-            <div className={styles.spotlightCard}>
+            <motion.div 
+              className={styles.spotlightCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.015 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
               <div className={styles.spotlightImageWrapper}>
                 <img src="/pipe burst.webp" alt="Main Line Pipe Burst" className={styles.spotlightImage} />
               </div>
@@ -143,10 +232,15 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* CARD 2: POTHOLE */}
-            <div className={styles.spotlightCard}>
+            <motion.div 
+              className={styles.spotlightCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.015 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
               <div className={styles.spotlightImageWrapper}>
                 <img src="/pothole.webp" alt="Deep Road Pothole" className={styles.spotlightImage} />
               </div>
@@ -169,10 +263,15 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* CARD 3: FALLEN TREE */}
-            <div className={styles.spotlightCard}>
+            <motion.div 
+              className={styles.spotlightCard}
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.015 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            >
               <div className={styles.spotlightImageWrapper}>
                 <img src="/fallen-tree-blocking-the-road.webp" alt="Fallen Banyan Tree" className={styles.spotlightImage} />
               </div>
@@ -195,14 +294,24 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-
-        </section>
+        </motion.section>
 
         {/* FEATURES GRID */}
-        <section className={styles.featuresGrid}>
-          <div className={styles.featureCard}>
+        <motion.section 
+          className={styles.featuresGrid}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={cardContainerVariants}
+        >
+          <motion.div 
+            className={styles.featureCard} 
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
             <div className={styles.iconBox}>
               <Sparkles size={20} />
             </div>
@@ -210,9 +319,14 @@ export default function LandingPage() {
             <p className={styles.featureText}>
               Snap a photo or record a short video. Our local computer vision models detect categories, estimate severity, and autofill location parameters immediately.
             </p>
-          </div>
+          </motion.div>
 
-          <div className={styles.featureCard}>
+          <motion.div 
+            className={styles.featureCard} 
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
             <div className={styles.iconBox}>
               <Map size={20} />
             </div>
@@ -220,9 +334,14 @@ export default function LandingPage() {
             <p className={styles.featureText}>
               Track street hazards and active resolutions on a vector grid map. Dynamic location sorting prioritizes active issues based on distance from your coordinates.
             </p>
-          </div>
+          </motion.div>
 
-          <div className={styles.featureCard}>
+          <motion.div 
+            className={styles.featureCard} 
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
             <div className={styles.iconBox}>
               <ThumbsUp size={20} />
             </div>
@@ -230,8 +349,8 @@ export default function LandingPage() {
             <p className={styles.featureText}>
               Elevate critical problems with community upvoting. Help municipalities prioritize repairs efficiently by showing where local demand is highest.
             </p>
-          </div>
-        </section>
+          </motion.div>
+        </motion.section>
       </div>
       <Footer />
     </div>

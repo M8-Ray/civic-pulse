@@ -17,6 +17,8 @@
   position: relative;
 }
 
+
+
 .landingContent {
   width: 100%;
   max-width: 900px;
@@ -59,14 +61,30 @@
   background: rgba(0, 0, 0, 0.02);
 }
 
-.stepsCaption {
-  font-size: 0.7rem;
+.howItWorksSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  margin: 12px 0;
+}
+
+.howItWorksTitle {
+  font-size: 2.25rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: -12px;
+  color: var(--text-primary);
   text-align: center;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.howItWorksSubtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 48px;
+  max-width: 600px;
 }
 
 .title {
@@ -93,19 +111,20 @@
   letter-spacing: -0.01em;
 }
 
-/* Typewriter styles */
+/* Word rolling/flip styles */
 .typewriterContainer {
   display: inline-flex;
+  position: relative;
+  overflow: hidden;
+  height: 1.5em;
   align-items: center;
-  min-height: 1.6em;
+  vertical-align: middle;
 }
 
 .typewriterText {
   color: var(--accent-cyan);
   font-weight: 700;
-  border-right: 2px solid var(--accent-cyan);
-  animation: cursorBlink 0.8s step-end infinite;
-  padding-right: 4px;
+  display: inline-block;
 }
 
 @keyframes cursorBlink {
@@ -174,49 +193,87 @@
   background: rgba(0, 0, 0, 0.02);
 }
 
-/* Steps Row: Workflow Process Layout */
-.stepsRow {
+/* How It Works Grid & Cards */
+.howItWorksGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;
-  border-top: 1px solid var(--border-light);
-  border-bottom: 1px solid var(--border-light);
-  padding: 32px 0;
-  margin: 12px 0;
-  gap: 0;
+  gap: 32px;
 }
 
-.stepCard {
-  padding: 0 32px;
-  text-align: left;
+.howItWorksCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 48px 32px 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  text-align: center;
+  transition: all var(--transition-normal);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3);
 }
 
-.stepCard:not(:last-child) {
-  border-right: 1px solid var(--border-light);
+[data-theme="light"] .howItWorksCard {
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.05);
 }
 
-.stepNumber {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--accent-cyan);
-  line-height: 1;
-  letter-spacing: -0.02em;
+.howItWorksCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 24px 48px -10px rgba(0, 240, 255, 0.12);
 }
 
-.stepTitle {
-  font-size: 0.95rem;
-  font-weight: 800;
+[data-theme="light"] .howItWorksCard:hover {
+  box-shadow: 0 24px 48px -10px rgba(2, 132, 199, 0.08);
+}
+
+.iconCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  margin-bottom: 24px;
+  transition: all var(--transition-fast);
 }
 
-.stepDescription {
-  font-size: 0.8rem;
+[data-theme="light"] .iconCircle {
+  background: rgba(15, 23, 42, 0.03);
+}
+
+.howItWorksCard:hover .iconCircle {
+  background: var(--accent-cyan-glow);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+[data-theme="light"] .howItWorksCard:hover .iconCircle {
+  background: var(--accent-cyan-glow);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.cardIcon {
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.015em;
+}
+
+.cardDescription {
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 /* Live Civic Ledger Preview */
@@ -571,23 +628,21 @@
     justify-content: center;
   }
 
-  .stepsRow {
+  .howItWorksSection {
+    padding: 24px 0;
+  }
+
+  .howItWorksSubtitle {
+    margin-bottom: 32px;
+  }
+
+  .howItWorksGrid {
     grid-template-columns: 1fr;
-    border-bottom: none;
-    padding: 16px 0;
     gap: 24px;
   }
 
-  .stepCard {
-    padding: 0;
-    align-items: center;
-    text-align: center;
-  }
-
-  .stepCard:not(:last-child) {
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
-    padding-bottom: 24px;
+  .howItWorksCard {
+    padding: 36px 24px;
   }
 
   .spotlightGrid {

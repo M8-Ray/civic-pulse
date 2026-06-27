@@ -12,6 +12,7 @@
     "@emnapi/core": "^1.11.1",
     "@emnapi/runtime": "^1.11.1",
     "@supabase/supabase-js": "^2.108.2",
+    "framer-motion": "^12.42.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.21.0",
     "next": "16.2.9",

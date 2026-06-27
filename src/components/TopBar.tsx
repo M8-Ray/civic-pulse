@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
@@ -12,6 +12,11 @@ export default function TopBar() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className={`${styles.topBar} glass`}>
@@ -27,13 +32,21 @@ export default function TopBar() {
       </Link>
 
       <div className={styles.profileArea}>
+        <Link 
+          href="/municipal" 
+          className={styles.municipalBtn}
+          title="Municipal Authority Console"
+        >
+          Portal For Authorities
+        </Link>
+
         <button
           onClick={toggleTheme}
           className={styles.themeToggleBtn}
           aria-label="Toggle light/dark theme"
-          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          title={mounted ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : 'Toggle theme'}
         >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          {mounted && theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
         {user ? (

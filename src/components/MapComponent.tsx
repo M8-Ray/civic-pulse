@@ -19,6 +19,13 @@ const getStatusLabelClass = (status: IssueStatus) => {
   }
 };
 
+const MAP_STYLES = [
+  { id: 'theme', label: 'Theme Match' },
+  { id: 'color', label: 'Colored Voyager' }
+] as const;
+
+type MapStyleType = typeof MAP_STYLES[number]['id'];
+
 export default function MapComponent() {
   const { userLocation, isLoading: locationLoading, defaultLocation } = useLocation();
   const { theme } = useTheme();
@@ -31,6 +38,7 @@ export default function MapComponent() {
   // States
   const { user } = useAuth();
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [mapStyle, setMapStyle] = useState<MapStyleType>('theme');
 
   // Lat and Lng to use as active map center
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
@@ -213,23 +221,35 @@ export default function MapComponent() {
     };
   }, [locationLoading]); // Initialize map once location is loaded
 
-  // 1.5 Handle Dynamic Tile Layer Theme Changes
+  // 1.5 Handle Dynamic Tile Layer Style/Theme Changes
   useEffect(() => {
     if (mapInstanceRef.current) {
       if (tileLayerRef.current) {
         tileLayerRef.current.remove();
       }
 
-      const tileUrl = theme === 'dark'
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      let tileUrl = '';
+      let attribution = '';
+
+      switch (mapStyle) {
+        case 'theme':
+          tileUrl = theme === 'dark'
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+          attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+          break;
+        case 'color':
+          tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+          attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+          break;
+      }
 
       tileLayerRef.current = L.tileLayer(tileUrl, {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution,
         maxZoom: 20
       }).addTo(mapInstanceRef.current);
     }
-  }, [theme, locationLoading]);
+  }, [theme, mapStyle, locationLoading]);
 
   // 2. Handle User Location Marker Updates
   useEffect(() => {
@@ -350,6 +370,20 @@ export default function MapComponent() {
         <div className={styles.controlsRow} style={{ justifyContent: 'flex-end' }}>
           {/* Action Floating Buttons */}
           <div className={styles.actionStack}>
+            <button
+              onClick={() => {
+                setMapStyle((prev) => {
+                  const currentIndex = MAP_STYLES.findIndex(s => s.id === prev);
+                  const nextIndex = (currentIndex + 1) % MAP_STYLES.length;
+                  return MAP_STYLES[nextIndex].id;
+                });
+              }}
+              className={`${styles.fab} glass`}
+              title={`Map Style: ${MAP_STYLES.find(s => s.id === mapStyle)?.label ?? 'Map Style'}`}
+              aria-label="Change map style"
+            >
+              <Layers size={18} />
+            </button>
             <button
               onClick={handleRecenter}
               className={`${styles.fab} glass`}

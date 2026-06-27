@@ -22,6 +22,7 @@ export interface Issue {
   resolvedVotes?: number;
   userResolvedVoted?: boolean;
   user_id?: string;
+  city?: string;
 }
 
 // Haversine formula to calculate distance between two coordinates in kilometers
@@ -127,6 +128,59 @@ const BASE_ISSUES = [
   }
 ];
 
+export const CITY_CENTERS = [
+  { city: 'Mumbai', lat: 19.0760, lng: 72.8777, email: 'mc@mcgm.gov.in', body: 'Brihanmumbai Municipal Corporation (BMC)' },
+  { city: 'Delhi', lat: 28.6139, lng: 77.2090, email: 'mcd-ithelpdesk@mcd.nic.in', body: 'Municipal Corporation of Delhi (MCD)' },
+  { city: 'Bengaluru', lat: 12.9716, lng: 77.5946, email: 'comm@bbmp.gov.in', body: 'Bruhat Bengaluru Mahanagara Palike (BBMP)' },
+  { city: 'Chennai', lat: 13.0827, lng: 80.2707, email: 'commissioner@chennaicorporation.gov.in', body: 'Greater Chennai Corporation (GCC)' },
+  { city: 'Hyderabad', lat: 17.3850, lng: 78.4867, email: 'commissioner-ghmc@gov.in', body: 'Greater Hyderabad Municipal Corporation (GHMC)' },
+  { city: 'Kolkata', lat: 22.5726, lng: 88.3639, email: 'mc@kmcgov.in', body: 'Kolkata Municipal Corporation (KMC)' },
+  { city: 'Pune', lat: 18.5204, lng: 73.8567, email: 'info@punecorporation.org', body: 'Pune Municipal Corporation (PMC)' },
+  { city: 'Ahmedabad', lat: 23.0225, lng: 72.5714, email: 'mc@ahmedabadcity.gov.in', body: 'Amdavad Municipal Corporation (AMC)' },
+  { city: 'Aurangabad', lat: 19.8762, lng: 75.3433, email: 'commissioner@amc.gov.in', body: 'Aurangabad Municipal Corporation (AMC)' }
+];
+
+export function getClosestCity(lat: number, lng: number): string {
+  let closestCity = 'Mumbai';
+  let minDistance = Infinity;
+  for (const center of CITY_CENTERS) {
+    const dist = calculateDistance(lat, lng, center.lat, center.lng);
+    if (dist < minDistance) {
+      minDistance = dist;
+      closestCity = center.city;
+    }
+  }
+  return closestCity;
+}
+
+export function isOfficialEmail(email: string): boolean {
+  const domain = email.toLowerCase().split('@')[1];
+  if (!domain) return false;
+  
+  if (domain === 'example.gov' || domain === 'test.gov' || domain === 'civicpulse.gov') {
+    return true;
+  }
+
+  return (
+    domain.endsWith('.gov') ||
+    domain.endsWith('.gov.in') ||
+    domain.endsWith('.nic.in') ||
+    domain.endsWith('.nic') ||
+    domain.endsWith('.municipal.in') ||
+    domain.endsWith('.org.in') ||
+    domain === 'punecorporation.org' ||
+    domain === 'mcgm.gov.in' ||
+    domain === 'mcd.nic.in' ||
+    domain === 'bbmp.gov.in' ||
+    domain === 'chennaicorporation.gov.in' ||
+    domain === 'kmcgov.in' ||
+    domain === 'ahmedabadcity.gov.in' ||
+    domain === 'ghmc.gov.in' ||
+    domain === 'gov.in' ||
+    domain === 'nic.in'
+  );
+}
+
 const LOCAL_STORAGE_KEY = 'civicpulse_issues';
 const UPVOTED_IDS_KEY = 'civicpulse_upvoted_issues';
 const CREATED_IDS_KEY = 'civicpulse_created_issues';
@@ -197,9 +251,10 @@ export function getLocalIssues(centerLat: number, centerLng: number): Issue[] {
       const resolvedVotedIds = getLocalResolvedVotedIds();
       return parsed.filter(i => i.id).map(i => ({
         ...i,
-        userReported: createdIds.includes(i.id) || i.id.startsWith('user-'),
+        userReported: createdIds.includes(i.id),
         resolvedVotes: i.resolvedVotes || 0,
-        userResolvedVoted: resolvedVotedIds.includes(i.id)
+        userResolvedVoted: resolvedVotedIds.includes(i.id),
+        city: i.city || getClosestCity(i.lat, i.lng)
       }));
     } catch (e) {
       console.error("Failed to parse issues from localStorage:", e);
@@ -207,23 +262,28 @@ export function getLocalIssues(centerLat: number, centerLng: number): Issue[] {
   }
 
   // Seed default issues around the provided coordinates
-  const seeded: Issue[] = BASE_ISSUES.map((issue, idx) => ({
-    id: `seed-${idx}`,
-    title: issue.title,
-    description: issue.description,
-    category: issue.category,
-    severity: issue.severity,
-    status: issue.status,
-    lat: centerLat + issue.latOffset,
-    lng: centerLng + issue.lngOffset,
-    upvotes: issue.upvotes,
-    createdAt: issue.createdAt,
-    mediaUrl: issue.mediaUrl,
-    mediaType: issue.mediaType,
-    userUpvoted: false,
-    resolvedVotes: 0,
-    userResolvedVoted: false
-  }));
+  const seeded: Issue[] = BASE_ISSUES.map((issue, idx) => {
+    const lat = centerLat + issue.latOffset;
+    const lng = centerLng + issue.lngOffset;
+    return {
+      id: `seed-${idx}`,
+      title: issue.title,
+      description: issue.description,
+      category: issue.category,
+      severity: issue.severity,
+      status: issue.status,
+      lat,
+      lng,
+      upvotes: issue.upvotes,
+      createdAt: issue.createdAt,
+      mediaUrl: issue.mediaUrl,
+      mediaType: issue.mediaType,
+      userUpvoted: false,
+      resolvedVotes: 0,
+      userResolvedVoted: false,
+      city: getClosestCity(lat, lng)
+    };
+  });
 
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(seeded));
   return seeded;
@@ -247,6 +307,7 @@ export function saveLocalIssue(
     userUpvoted: true,
     userReported: true,
     user_id: currentUserId,
+    city: issue.city || getClosestCity(issue.lat, issue.lng)
   };
 
   // Track created issue locally
@@ -298,7 +359,9 @@ function mapDbToIssue(db: DbIssue, centerLat: number, centerLng: number, current
   const userUpvoted = upvotedIds.includes(db.id);
 
   const createdIds = getLocalCreatedIds();
-  const userReported = createdIds.includes(db.id) || db.id.startsWith('user-') || (!!currentUserId && db.user_id === currentUserId);
+  const userReported = db.user_id
+    ? (!!currentUserId && db.user_id === currentUserId)
+    : createdIds.includes(db.id);
 
   const resolvedVotedIds = getLocalResolvedVotedIds();
   const userResolvedVoted = resolvedVotedIds.includes(db.id);
@@ -346,6 +409,7 @@ function mapDbToIssue(db: DbIssue, centerLat: number, centerLng: number, current
     resolvedVotes,
     userResolvedVoted,
     user_id: db.user_id,
+    city: getClosestCity(db.lat, db.lng),
   };
 }
 
@@ -369,6 +433,8 @@ export async function getIssues(centerLat: number, centerLng: number, currentUse
       // Seed default issues into Supabase so it has initial items plotted relative to user
       const seededDbIssues = BASE_ISSUES.map((issue, idx) => {
         const id = `seed-${idx}`;
+        const lat = centerLat + issue.latOffset;
+        const lng = centerLng + issue.lngOffset;
         return {
           id,
           title: issue.title,
@@ -376,12 +442,12 @@ export async function getIssues(centerLat: number, centerLng: number, currentUse
           category: issue.category,
           severity: issue.severity,
           status: issue.status,
-          lat: centerLat + issue.latOffset,
-          lng: centerLng + issue.lngOffset,
+          lat,
+          lng,
           upvotes: issue.upvotes,
           media_url: issue.mediaUrl,
           media_type: issue.mediaType,
-          created_at: new Date(Date.now() - (idx * 3600000)).toISOString(),
+          created_at: new Date(Date.now() - (idx * 3600000)).toISOString()
         };
       });
 
@@ -693,15 +759,64 @@ export async function deleteIssue(id: string, centerLat: number, centerLng: numb
     }
 
     if (!data || data.length === 0) {
-      const msg = "No rows deleted in Supabase. You likely need to enable 'DELETE' permissions on the 'issues' table or check your Row Level Security (RLS) policies in the Supabase Dashboard.";
-      console.warn(msg);
-      throw new Error(msg);
+      // Check if the issue actually exists in the database
+      const { data: checkData, error: checkError } = await supabase
+        .from('issues')
+        .select('id')
+        .eq('id', id);
+
+      if (!checkError && checkData && checkData.length > 0) {
+        // The issue exists, meaning it was blocked by RLS policies
+        const msg = "No rows deleted in Supabase. You likely need to enable 'DELETE' permissions on the 'issues' table or check your Row Level Security (RLS) policies in the Supabase Dashboard.";
+        console.warn(msg);
+        throw new Error(msg);
+      } else {
+        // The issue did not exist (already deleted or local mock issue), so handle it silently
+        console.log("Issue did not exist in Supabase or was already deleted. Proceeding silently.");
+      }
     }
 
     return getIssues(centerLat, centerLng, currentUserId);
   } catch (e) {
     console.error("Supabase deleteIssue failed:", e);
     throw e;
+  }
+}
+
+export function updateLocalIssueStatus(id: string, status: IssueStatus, centerLat: number, centerLng: number): Issue[] {
+  const currentIssues = getLocalIssues(centerLat, centerLng);
+  const updated = currentIssues.map(issue => {
+    if (issue.id === id) {
+      return { ...issue, status };
+    }
+    return issue;
+  });
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+  return getLocalIssues(centerLat, centerLng);
+}
+
+export async function updateIssueStatus(id: string, status: IssueStatus, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
+  updateLocalIssueStatus(id, status, centerLat, centerLng);
+
+  if (!supabase) {
+    return getLocalIssues(centerLat, centerLng);
+  }
+
+  try {
+    const { error } = await supabase
+      .from('issues')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) {
+      console.error("Error updating issue status in Supabase:", error);
+      throw error;
+    }
+
+    return getIssues(centerLat, centerLng, currentUserId);
+  } catch (e) {
+    console.error("Supabase updateIssueStatus failed, falling back to local storage:", e);
+    return getLocalIssues(centerLat, centerLng);
   }
 }
 

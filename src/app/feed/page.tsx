@@ -29,6 +29,7 @@ export default function FeedPage() {
   const [sortBy, setSortBy] = useState<SortOption>('distance');
   const [isIssuesLoading, setIsIssuesLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
+  const [radiusLimit, setRadiusLimit] = useState<number | 'all'>(10);
 
   // Center coordinate reference to sort by distance
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
@@ -152,7 +153,7 @@ export default function FeedPage() {
       issue.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const distance = calculateDistance(centerLat, centerLng, issue.lat, issue.lng);
-    const isWithinRadius = distance <= 10;
+    const isWithinRadius = activeTab === 'my' || radiusLimit === 'all' || distance <= radiusLimit;
 
     return tabMatch && categoryMatch && queryMatch && isWithinRadius;
   });
@@ -267,6 +268,24 @@ export default function FeedPage() {
               className={styles.searchInput}
             />
           </div>
+
+          {activeTab !== 'my' && (
+            <select
+              value={radiusLimit}
+              onChange={(e) => {
+                const val = e.target.value;
+                setRadiusLimit(val === 'all' ? 'all' : Number(val));
+              }}
+              className={styles.sortSelect}
+              aria-label="Filter by proximity radius"
+              style={{ minWidth: '130px' }}
+            >
+              <option value={10}>📍 Within 10 km</option>
+              <option value={25}>📍 Within 25 km</option>
+              <option value={50}>📍 Within 50 km</option>
+              <option value="all">📍 All India (No limit)</option>
+            </select>
+          )}
 
           <select
             value={sortBy}
