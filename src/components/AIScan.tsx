@@ -14,6 +14,7 @@ interface AIScanProps {
     severity: IssueSeverity;
     description: string;
   }) => void;
+  onCancel: () => void;
 }
 
 interface LogLine {
@@ -21,9 +22,10 @@ interface LogLine {
   type: 'info' | 'analysis' | 'success' | 'error';
 }
 
-export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }: AIScanProps) {
+export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete, onCancel }: AIScanProps) {
   const [logs, setLogs] = useState<LogLine[]>([]);
   const [progress, setProgress] = useState(0);
+  const [isRejected, setIsRejected] = useState(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll logs terminal
@@ -108,6 +110,17 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
 
         if (!active) return;
 
+        if (data.isCivicIssue === false) {
+          setIsRejected(true);
+          setLogs((prev) => [
+            ...prev,
+            { text: `⚠️ [WARNING] Non-civic media detected.`, type: 'error' },
+            { text: `❌ [REJECTED] The uploaded media does not depict a clear civic issue. Please upload a photo or video showing a road hazard, safety concern, utility failure, or sanitation issue.`, type: 'error' }
+          ]);
+          setProgress(100);
+          return;
+        }
+
         // Print success logs dynamically from API response
         setLogs((prev) => [
           ...prev,
@@ -134,6 +147,19 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
       } catch (err: any) {
         console.error("AI scanning failure:", err);
         if (!active) return;
+
+        const isValidationError = err.message.includes("does not depict") || err.message.includes("valid civic issue") || err.message.includes("422");
+
+        if (isValidationError) {
+          setIsRejected(true);
+          setLogs((prev) => [
+            ...prev,
+            { text: `❌ [REJECTED] ${err.message}`, type: 'error' },
+            { text: `⚠️ [SYSTEM] Validation failed: Please upload media depicting a valid civic issue.`, type: 'error' }
+          ]);
+          setProgress(100);
+          return;
+        }
 
         // Write error to diagnostic console
         setLogs((prev) => [
@@ -170,9 +196,9 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
     <div className={styles.aiScanOverlay}>
       <div className={`${styles.scanContainer} glass`}>
         {/* Glowing Media Scan Box */}
-        <div className={styles.scanMediaArea}>
-          <div className={styles.laserLine}></div>
-          <div className={styles.scanGridOverlay}></div>
+        <div className={styles.scanMediaArea} style={isRejected ? { borderColor: 'var(--accent-crimson)', boxShadow: '0 0 15px rgba(255, 65, 108, 0.3)' } : {}}>
+          {isRejected ? null : <div className={styles.laserLine}></div>}
+          <div className={styles.scanGridOverlay} style={isRejected ? { background: 'rgba(255, 65, 108, 0.05)' } : {}}></div>
           {mediaType === 'video' ? (
             <video src={mediaUrl} muted loop autoPlay playsInline className={styles.scanMedia} />
           ) : (
@@ -184,7 +210,9 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
         <div className={styles.scannerConsole}>
           <div className={styles.consoleHeader}>
             <span className={styles.consoleTitle}>CORE DIAGNOSTICS</span>
-            <span className={styles.consoleStatus}>● SCANNING {progress}%</span>
+            <span className={styles.consoleStatus} style={isRejected ? { color: 'var(--accent-crimson)' } : {}}>
+              {isRejected ? '● REJECTED' : `● SCANNING ${progress}%`}
+            </span>
           </div>
 
           <div className={styles.consoleLogs}>
@@ -207,15 +235,39 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
             <div ref={logsEndRef} />
           </div>
 
-          <div className={styles.consoleFooter}>
-            <div className={styles.scanMetric}>
-              <span className={styles.scanMetricLabel}>MATRIX SIZE:</span>
-              <span className={styles.scanMetricValue}>1024x1024 px</span>
-            </div>
-            <div className={styles.scanMetric}>
-              <span className={styles.scanMetricLabel}>PROCESSOR:</span>
-              <span className={styles.scanMetricValue}>CIVIC-VISION v2 (GEMINI-FLASH)</span>
-            </div>
+          <div className={styles.consoleFooter} style={{ display: 'flex', flexDirection: 'column', gap: isRejected ? '10px' : '4px', alignItems: 'stretch' }}>
+            {isRejected ? (
+              <button 
+                type="button"
+                onClick={onCancel}
+                className={styles.btnSecondary} 
+                style={{ 
+                  width: '100%', 
+                  borderColor: 'var(--accent-crimson)', 
+                  color: 'var(--accent-crimson)',
+                  background: 'rgba(255, 65, 108, 0.1)',
+                  fontWeight: 700,
+                  padding: '10px',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  display: 'inline-block'
+                }}
+              >
+                ← Back to Upload
+              </button>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <div className={styles.scanMetric}>
+                  <span className={styles.scanMetricLabel}>MATRIX SIZE:</span>
+                  <span className={styles.scanMetricValue}>1024x1024 px</span>
+                </div>
+                <div className={styles.scanMetric}>
+                  <span className={styles.scanMetricLabel}>PROCESSOR:</span>
+                  <span className={styles.scanMetricValue}>CIVIC-VISION v2 (GEMINI-FLASH)</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

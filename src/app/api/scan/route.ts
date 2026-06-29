@@ -47,28 +47,32 @@ export async function POST(req: NextRequest) {
             mimeType: mediaMimeType
           }
         },
-        "Analyze this image of a civic issue (e.g. pothole, broken streetlight, trash overflow, water leak, fallen tree, traffic hazard) and return structured classification details."
+        "Analyze this image and determine if it clearly depicts a public civic issue or municipal hazard (e.g. pothole, road damage, broken streetlight, trash overflow, sanitation hazard, water leak, fallen tree, safety hazard, traffic problem). If it is a civic issue, return isCivicIssue as true. If it is a random object, selfie, close-up of face, indoor room/furniture, product photo, or anything unrelated to neighborhood hazards or public utility failures, return isCivicIssue as false."
       ],
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
           type: 'OBJECT',
           properties: {
+            isCivicIssue: {
+              type: 'BOOLEAN',
+              description: 'Whether the image clearly depicts a neighborhood public civic issue (e.g. pothole, street light outage, overflowing trash, tree blocking road, traffic hazard). Set to false for selfies, closeups of items like water bottles, computers, inside houses, or non-neighborhood issues.'
+            },
             title: { 
               type: 'STRING', 
-              description: 'Sleek, short title summarizing the hazard, e.g. "Clogged Sewer Grid" or "Deep Pothole Crater"' 
+              description: 'Sleek, short title summarizing the hazard, e.g. "Clogged Sewer Grid" or "Deep Pothole Crater". If isCivicIssue is false, default to "N/A".' 
             },
             category: { 
               type: 'STRING', 
               enum: ['Infrastructure', 'Sanitation', 'Safety', 'Traffic', 'Environment'],
-              description: 'The closest fitting civic department category.'
+              description: 'The closest fitting civic department category. If isCivicIssue is false, default to "Infrastructure".'
             },
             description: { 
               type: 'STRING', 
-              description: 'A 1-2 sentence detailed description of the scene, highlighting specific hazards for repair crews.'
+              description: 'A 1-2 sentence detailed description of the scene, highlighting specific hazards for repair crews. If isCivicIssue is false, default to "N/A".'
             }
           },
-          required: ['title', 'category', 'description']
+          required: ['isCivicIssue', 'title', 'category', 'description']
         }
       } as any
     });
@@ -78,8 +82,19 @@ export async function POST(req: NextRequest) {
       throw new Error("Failed to receive a valid response from the Gemini vision model.");
     }
 
-    // Parse structured JSON and randomly assign 'Medium' or 'High' severity
+    // Parse structured JSON
     const data = JSON.parse(responseText);
+    
+    if (data.isCivicIssue === false) {
+      return NextResponse.json({
+        isCivicIssue: false,
+        title: 'N/A',
+        category: 'Infrastructure',
+        description: 'The uploaded media does not depict a clear civic issue.'
+      });
+    }
+
+    data.isCivicIssue = true;
     data.severity = Math.random() < 0.5 ? 'Medium' : 'High';
     
     return NextResponse.json(data);

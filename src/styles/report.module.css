@@ -412,8 +412,8 @@
 
 .scannerConsole {
   flex: 1;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--border-light);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: var(--radius-sm);
   padding: 16px;
   display: flex;
@@ -423,7 +423,7 @@
 }
 
 .consoleHeader {
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
   padding-bottom: 8px;
   margin-bottom: 10px;
   display: flex;
@@ -434,12 +434,12 @@
 .consoleTitle {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--accent-cyan);
+  color: #22d3ee;
 }
 
 .consoleStatus {
   font-size: 0.7rem;
-  color: var(--accent-emerald);
+  color: #4ade80;
   animation: flash 1s steps(2, start) infinite;
 }
 
@@ -456,7 +456,7 @@
   flex-direction: column;
   gap: 6px;
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: #f4f4f5;
 }
 
 .logLine {
@@ -465,23 +465,23 @@
 }
 
 .logInfo {
-  color: var(--text-muted);
+  color: #cbd5e1;
 }
 
 .logAnalysis {
-  color: var(--accent-amber);
+  color: #fbbf24;
 }
 
 .logSuccess {
-  color: var(--accent-emerald);
+  color: #4ade80;
 }
 
 .logError {
-  color: var(--accent-crimson);
+  color: #f87171;
 }
 
 .consoleFooter {
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
   padding-top: 10px;
   margin-top: 10px;
   font-size: 0.75rem;
@@ -496,11 +496,11 @@
 }
 
 .scanMetricLabel {
-  color: var(--text-muted);
+  color: #94a3b8;
 }
 
 .scanMetricValue {
-  color: var(--accent-cyan);
+  color: #38bdf8;
   font-weight: 700;
 }
 

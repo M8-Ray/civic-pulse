@@ -6,6 +6,7 @@ import { useLocation } from '@/context/LocationContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { getIssues, toggleUpvoteIssue, deleteIssue, calculateDistance, Issue, IssueCategory, IssueStatus } from '@/data/mockIssues';
+import AuthModal from '@/components/AuthModal';
 import { Navigation, ShieldAlert, Layers } from 'lucide-react';
 import styles from '../styles/map.module.css';
 
@@ -39,6 +40,7 @@ export default function MapComponent() {
   const { user } = useAuth();
   const [issues, setIssues] = useState<Issue[]>([]);
   const [mapStyle, setMapStyle] = useState<MapStyleType>('theme');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Lat and Lng to use as active map center
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
@@ -143,6 +145,11 @@ export default function MapComponent() {
 
             newUpvoteBtn.addEventListener('click', async (ev) => {
               ev.stopPropagation();
+
+              if (!user) {
+                setIsAuthModalOpen(true);
+                return;
+              }
 
               const upvoteCountSpan = popupNode?.querySelector('.popup-upvote-count');
               const isCurrentlyUpvoted = newUpvoteBtn.classList.contains('popup-upvoted');
@@ -416,6 +423,7 @@ export default function MapComponent() {
           <span className={styles.statValue}>{stats.resolved}</span>
         </div>
       </div>
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }

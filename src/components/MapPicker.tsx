@@ -7,9 +7,10 @@ interface MapPickerProps {
   lat: number;
   lng: number;
   onChange: (lat: number, lng: number) => void;
+  boundaryCenter?: { lat: number; lng: number } | null;
 }
 
-export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
+export default function MapPicker({ lat, lng, onChange, boundaryCenter }: MapPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -20,12 +21,24 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
       const map = L.map(mapRef.current, {
         zoomControl: false,
         attributionControl: false
-      }).setView([lat, lng], 15);
+      }).setView([lat, lng], 17); // slightly zoom closer to show 100m radius clearly
 
       // Add CartoDB Dark Matter tile layer
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 20
       }).addTo(map);
+
+      // Draw 100m radius boundary circle around boundaryCenter if provided
+      if (boundaryCenter) {
+        L.circle([boundaryCenter.lat, boundaryCenter.lng], {
+          color: 'var(--accent-cyan)',
+          fillColor: 'var(--accent-cyan)',
+          fillOpacity: 0.05,
+          weight: 1.5,
+          dashArray: '5, 5',
+          radius: 100 // 100 meters
+        }).addTo(map);
+      }
 
       // Custom severity high style marker for coordinate picking
       const pickerIcon = L.divIcon({

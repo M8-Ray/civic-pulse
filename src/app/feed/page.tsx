@@ -78,6 +78,10 @@ function FeedPageContent() {
 
   // Handle upvoting
   const handleUpvote = async (id: string) => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     // Optimistic UI updates
     setIssues((prevIssues) =>
       prevIssues.map((issue) => {

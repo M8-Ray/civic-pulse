@@ -137,7 +137,19 @@ export const CITY_CENTERS = [
   { city: 'Kolkata', lat: 22.5726, lng: 88.3639, email: 'mc@kmcgov.in', body: 'Kolkata Municipal Corporation (KMC)' },
   { city: 'Pune', lat: 18.5204, lng: 73.8567, email: 'info@punecorporation.org', body: 'Pune Municipal Corporation (PMC)' },
   { city: 'Ahmedabad', lat: 23.0225, lng: 72.5714, email: 'mc@ahmedabadcity.gov.in', body: 'Amdavad Municipal Corporation (AMC)' },
-  { city: 'Aurangabad', lat: 19.8762, lng: 75.3433, email: 'commissioner@amc.gov.in', body: 'Aurangabad Municipal Corporation (AMC)' }
+  { city: 'Aurangabad', lat: 19.8762, lng: 75.3433, email: 'commissioner@amc.gov.in', body: 'Aurangabad Municipal Corporation (AMC)' },
+  { city: 'Surat', lat: 21.1702, lng: 72.8311, email: 'commissioner@suratmunicipal.gov.in', body: 'Surat Municipal Corporation (SMC)' },
+  { city: 'Jaipur', lat: 26.9124, lng: 75.7873, email: 'commissioner.jmc@rajasthan.gov.in', body: 'Jaipur Municipal Corporation (JMC)' },
+  { city: 'Lucknow', lat: 26.8467, lng: 80.9462, email: 'nnlko@nic.in', body: 'Lucknow Municipal Corporation (LMC)' },
+  { city: 'Nagpur', lat: 21.1458, lng: 79.0882, email: 'mconagpur@gov.in', body: 'Nagpur Municipal Corporation (NMC)' },
+  { city: 'Indore', lat: 22.7196, lng: 75.8577, email: 'nn.indore@mpurban.gov.in', body: 'Indore Municipal Corporation (IMC)' },
+  { city: 'Thane', lat: 19.2183, lng: 72.9781, email: 'mc@thanecity.gov.in', body: 'Thane Municipal Corporation (TMC)' },
+  { city: 'Bhopal', lat: 23.2599, lng: 77.4126, email: 'commoffice@bmconline.gov.in', body: 'Bhopal Municipal Corporation (BMC)' },
+  { city: 'Patna', lat: 25.5941, lng: 85.1376, email: 'patnamc-bih@gov.in', body: 'Patna Municipal Corporation (PMC)' },
+  { city: 'Vadodara', lat: 22.3072, lng: 73.1812, email: 'commissioner@vmc.gov.in', body: 'Vadodara Municipal Corporation (VMC)' },
+  { city: 'Coimbatore', lat: 11.0168, lng: 76.9558, email: 'commr.coimbatore@tn.gov.in', body: 'Coimbatore City Municipal Corporation (CCMC)' },
+  { city: 'Ludhiana', lat: 30.9010, lng: 75.8573, email: 'commissioner.mcl@punjab.gov.in', body: 'Municipal Corporation Ludhiana (MCL)' },
+  { city: 'Visakhapatnam', lat: 17.6868, lng: 83.2185, email: 'commissioner@gvmc.gov.in', body: 'Greater Visakhapatnam Municipal Corporation (GVMC)' }
 ];
 
 export function getClosestCity(lat: number, lng: number): string {
@@ -238,7 +250,7 @@ export function setLocalResolvedVotedIds(ids: string[]): void {
   } catch (e) {}
 }
 
-export function getLocalIssues(centerLat: number, centerLng: number): Issue[] {
+export function getLocalIssues(centerLat: number, centerLng: number, currentUserId?: string): Issue[] {
   if (typeof window === 'undefined') {
     return [];
   }
@@ -251,9 +263,10 @@ export function getLocalIssues(centerLat: number, centerLng: number): Issue[] {
       const resolvedVotedIds = getLocalResolvedVotedIds();
       return parsed.filter(i => i.id).map(i => ({
         ...i,
-        userReported: createdIds.includes(i.id),
+        userUpvoted: currentUserId ? (i.userUpvoted || false) : false,
+        userReported: currentUserId ? createdIds.includes(i.id) : false,
         resolvedVotes: i.resolvedVotes || 0,
-        userResolvedVoted: resolvedVotedIds.includes(i.id),
+        userResolvedVoted: currentUserId ? resolvedVotedIds.includes(i.id) : false,
         city: i.city || getClosestCity(i.lat, i.lng)
       }));
     } catch (e) {
@@ -295,7 +308,7 @@ export function saveLocalIssue(
   centerLng: number,
   currentUserId?: string
 ): Issue {
-  const currentIssues = getLocalIssues(centerLat, centerLng);
+  const currentIssues = getLocalIssues(centerLat, centerLng, currentUserId);
   
   const newIssueId = `user-${Date.now()}`;
   const newIssue: Issue = {
@@ -319,8 +332,8 @@ export function saveLocalIssue(
   return newIssue;
 }
 
-export function toggleLocalUpvoteIssue(id: string, centerLat: number, centerLng: number): Issue[] {
-  const currentIssues = getLocalIssues(centerLat, centerLng);
+export function toggleLocalUpvoteIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Issue[] {
+  const currentIssues = getLocalIssues(centerLat, centerLng, currentUserId);
   const updated = currentIssues.map(issue => {
     if (issue.id === id) {
       const isUpvoted = !issue.userUpvoted;
@@ -334,7 +347,7 @@ export function toggleLocalUpvoteIssue(id: string, centerLat: number, centerLng:
   });
   
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-  return updated;
+  return getLocalIssues(centerLat, centerLng, currentUserId);
 }
 
 interface DbIssue {
@@ -356,15 +369,15 @@ interface DbIssue {
 
 function mapDbToIssue(db: DbIssue, centerLat: number, centerLng: number, currentUserId?: string): Issue {
   const upvotedIds = getLocalUpvotedIds();
-  const userUpvoted = upvotedIds.includes(db.id);
+  const userUpvoted = currentUserId ? upvotedIds.includes(db.id) : false;
 
   const createdIds = getLocalCreatedIds();
   const userReported = db.user_id
     ? (!!currentUserId && db.user_id === currentUserId)
-    : createdIds.includes(db.id);
+    : (currentUserId ? createdIds.includes(db.id) : false);
 
   const resolvedVotedIds = getLocalResolvedVotedIds();
-  const userResolvedVoted = resolvedVotedIds.includes(db.id);
+  const userResolvedVoted = currentUserId ? resolvedVotedIds.includes(db.id) : false;
   const resolvedVotes = db.resolved_votes || 0;
 
   let timeStr = 'Some time ago';
@@ -415,7 +428,7 @@ function mapDbToIssue(db: DbIssue, centerLat: number, centerLng: number, current
 
 export async function getIssues(centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
   if (!supabase) {
-    return getLocalIssues(centerLat, centerLng);
+    return getLocalIssues(centerLat, centerLng, currentUserId);
   }
 
   try {
@@ -466,7 +479,7 @@ export async function getIssues(centerLat: number, centerLng: number, currentUse
     return (data as DbIssue[]).map(db => mapDbToIssue(db, centerLat, centerLng, currentUserId));
   } catch (e) {
     console.error("Failed to query Supabase, falling back to local storage:", e);
-    return getLocalIssues(centerLat, centerLng);
+    return getLocalIssues(centerLat, centerLng, currentUserId);
   }
 }
 
@@ -599,12 +612,12 @@ export async function toggleUpvoteIssue(id: string, centerLat: number, centerLng
     return getIssues(centerLat, centerLng, currentUserId);
   } catch (e) {
     console.error("Supabase toggleUpvoteIssue failed, falling back to local storage:", e);
-    return toggleLocalUpvoteIssue(id, centerLat, centerLng);
+    return toggleLocalUpvoteIssue(id, centerLat, centerLng, currentUserId);
   }
 }
 
-export function voteLocalIssueResolved(id: string, centerLat: number, centerLng: number): Issue[] {
-  const currentIssues = getLocalIssues(centerLat, centerLng);
+export function voteLocalIssueResolved(id: string, centerLat: number, centerLng: number, currentUserId?: string): Issue[] {
+  const currentIssues = getLocalIssues(centerLat, centerLng, currentUserId);
   const resolvedVotedIds = getLocalResolvedVotedIds();
   const isVoted = resolvedVotedIds.includes(id);
 
@@ -640,12 +653,12 @@ export function voteLocalIssueResolved(id: string, centerLat: number, centerLng:
   }
 
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-  return getLocalIssues(centerLat, centerLng);
+  return getLocalIssues(centerLat, centerLng, currentUserId);
 }
 
 export async function voteIssueResolved(id: string, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
   if (!supabase) {
-    return voteLocalIssueResolved(id, centerLat, centerLng);
+    return voteLocalIssueResolved(id, centerLat, centerLng, currentUserId);
   }
 
   try {
@@ -703,7 +716,7 @@ export async function voteIssueResolved(id: string, centerLat: number, centerLng
   }
 }
 
-export function deleteLocalIssue(id: string, centerLat: number, centerLng: number): Issue[] {
+export function deleteLocalIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Issue[] {
   if (typeof window === 'undefined') return [];
 
   // 1. Remove from civicpulse_issues
@@ -735,15 +748,15 @@ export function deleteLocalIssue(id: string, centerLat: number, centerLng: numbe
     setLocalResolvedVotedIds(resolvedVotedIds.filter(x => x !== id));
   }
 
-  return getLocalIssues(centerLat, centerLng);
+  return getLocalIssues(centerLat, centerLng, currentUserId);
 }
 
 export async function deleteIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
   // Always update local storage first as local state cache / fallback
-  deleteLocalIssue(id, centerLat, centerLng);
+  deleteLocalIssue(id, centerLat, centerLng, currentUserId);
 
   if (!supabase) {
-    return getLocalIssues(centerLat, centerLng);
+    return getLocalIssues(centerLat, centerLng, currentUserId);
   }
 
   try {

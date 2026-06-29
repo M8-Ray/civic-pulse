@@ -91,6 +91,8 @@ export default function ReportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submittedIssue, setSubmittedIssue] = useState<any | null>(null);
+  const [initialCoords, setInitialCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationWarning, setLocationWarning] = useState<string | null>(null);
   
   // Duplicate verification modal states
   const [duplicateIssue, setDuplicateIssue] = useState<Issue | null>(null);
@@ -110,12 +112,13 @@ export default function ReportPage() {
 
   // Coordinate center alignment
   useEffect(() => {
-    if (!locationLoading) {
+    if (!locationLoading && !initialCoords) {
       const activeCoords = userLocation ?? defaultLocation;
       setLat(activeCoords.lat);
       setLng(activeCoords.lng);
+      setInitialCoords({ lat: activeCoords.lat, lng: activeCoords.lng });
     }
-  }, [locationLoading, userLocation, defaultLocation]);
+  }, [locationLoading, userLocation, defaultLocation, initialCoords]);
 
   // Handle local file uploads (supports photo/video inputs)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -216,19 +219,38 @@ export default function ReportPage() {
     const dashboardUrl = `${window.location.origin}/map?lat=${submittedIssue.lat}&lng=${submittedIssue.lng}&id=${submittedIssue.id}`;
     
     const message = `🚨 *CivicPulse Grievance Alert* 🚨
-
+ 
 *Issue:* ${submittedIssue.title}
 *Category:* ${submittedIssue.category}
 *Severity:* ${submittedIssue.severity}
-
+ 
 *Description:* 
 "${submittedIssue.description}"
-
+ 
 📍 *Incident Location:* ${mapsUrl}
 🖼️ *Photo / Video:* ${submittedIssue.mediaUrl}`;
-
+ 
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const shareOnX = () => {
+    if (!submittedIssue) return;
+    
+    // Construct message
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${submittedIssue.lat},${submittedIssue.lng}`;
+    const appUrl = window.location.origin;
+    
+    const message = `🚨 Grievance Alert: ${submittedIssue.title} (${submittedIssue.category})
+Severity: ${submittedIssue.severity}
+
+📍 Incident Location: ${mapsUrl}
+🖼️ Media Link: ${submittedIssue.mediaUrl}
+
+Verified via CivicPulse (${appUrl}). Please resolve at the earliest! #CivicPulse #SmartCity`;
+
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    window.open(xUrl, '_blank');
   };
 
   const emailToMunicipality = () => {
@@ -416,6 +438,7 @@ A Concerned Citizen`;
             mediaType={mediaType}
             detectedType={detectedType}
             onComplete={handleAIScanComplete}
+            onCancel={() => setStep(1)}
           />
         )}
 
@@ -491,7 +514,7 @@ A Concerned Citizen`;
                     onClick={shareOnWhatsApp}
                     className={styles.btnSecondary}
                     style={{ 
-                      flex: '1 1 200px', 
+                      flex: '1 1 150px', 
                       justifyContent: 'center', 
                       borderColor: '#25D366', 
                       color: '#25D366', 
@@ -511,10 +534,32 @@ A Concerned Citizen`;
 
                   <button
                     type="button"
+                    onClick={shareOnX}
+                    className={styles.btnSecondary}
+                    style={{ 
+                      flex: '1 1 150px', 
+                      justifyContent: 'center', 
+                      borderColor: 'var(--text-primary)', 
+                      color: 'var(--text-primary)', 
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontWeight: 700
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>Post on X</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={emailToMunicipality}
                     className={styles.btnSecondary}
                     style={{ 
-                      flex: '1 1 200px', 
+                      flex: '1 1 150px', 
                       justifyContent: 'center', 
                       borderColor: 'var(--accent-cyan)', 
                       color: 'var(--accent-cyan)', 
@@ -643,13 +688,43 @@ A Concerned Citizen`;
                   <MapPicker
                     lat={lat}
                     lng={lng}
+                    boundaryCenter={initialCoords}
                     onChange={(newLat, newLng) => {
+                      if (initialCoords) {
+                        const dist = calculateDistance(initialCoords.lat, initialCoords.lng, newLat, newLng);
+                        if (dist > 0.1) {
+                          // Clamp coordinates to 100 meters (0.1 km) radius
+                          const ratio = 0.1 / dist;
+                          const clampedLat = initialCoords.lat + (newLat - initialCoords.lat) * ratio;
+                          const clampedLng = initialCoords.lng + (newLng - initialCoords.lng) * ratio;
+                          
+                          setLat(clampedLat);
+                          setLng(clampedLng);
+                          setLocationWarning("Marker is restricted to a 100m radius from auto-detected location.");
+                          return;
+                        }
+                      }
+                      setLocationWarning(null);
                       setLat(newLat);
                       setLng(newLng);
                     }}
                   />
                 </div>
-                <div style={{ display: 'flex', gap: '10px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                {locationWarning && (
+                  <div style={{ 
+                    color: 'var(--accent-crimson)', 
+                    fontSize: '0.8rem', 
+                    marginTop: '6px', 
+                    fontWeight: 600, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '4px' 
+                  }}>
+                    <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                    <span>{locationWarning}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '10px', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   <span>LAT: {lat.toFixed(6)}</span>
                   <span>LNG: {lng.toFixed(6)}</span>
                 </div>
