@@ -80,16 +80,14 @@ export default function LandingPage() {
   return (
     <div className={styles.landingContainer}>
       <TopBar />
-      {theme === 'dark' && (
-        <div className={styles.auroraBg}>
-          <Aurora
-            colorStops={["#7cff67", "#B497CF", "#5227FF"]}
-            blend={0.5}
-            amplitude={1.0}
-            speed={0.5}
-          />
-        </div>
-      )}
+      <div className={styles.auroraBg}>
+        <Aurora
+          colorStops={["#7cff67", "#B497CF", "#5227FF"]}
+          blend={0.5}
+          amplitude={1.0}
+          speed={0.5}
+        />
+      </div>
       <div className={styles.landingContent}>
         {/* HERO SECTION */}
         <motion.section

@@ -321,8 +321,26 @@ A Concerned Citizen`;
           <p className={styles.subtitle}>Help improve your neighborhood with automated AI classifications and precise location pins.</p>
         </div>
 
-        {/* Progress bar visual */}
-        <div className={styles.stepProgress}>
+        {!user ? (
+          <div className={`${styles.formCard} glass`} style={{ textAlign: 'center', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+            <AlertCircle size={48} style={{ color: 'var(--accent-cyan)' }} />
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Sign In to Report Issue</h2>
+            <p style={{ maxWidth: '440px', color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>
+              Please sign in to submit local issue reports. Requiring user authentication protects the platform from spam reports and false entries, ensuring that municipal alerts remain accurate and verified.
+            </p>
+            <button 
+              type="button"
+              onClick={() => setIsAuthModalOpen(true)}
+              className={styles.btnPrimary}
+              style={{ minWidth: '220px', justifyContent: 'center' }}
+            >
+              Sign In to Report Issue
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Progress bar visual */}
+            <div className={styles.stepProgress}>
           <div className={styles.stepLine}></div>
           <div 
             className={styles.stepLineActive} 
@@ -527,22 +545,6 @@ A Concerned Citizen`;
                 </button>
               </div>
             </div>
-          ) : !user ? (
-            <div className={`${styles.formCard} glass`} style={{ textAlign: 'center', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-              <AlertCircle size={48} style={{ color: 'var(--accent-cyan)' }} />
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Authentication Required</h2>
-              <p style={{ maxWidth: '400px', color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.5' }}>
-                Please sign in to submit local issue reports. Creating an account helps us verify coordinates and securely manage your dashboard.
-              </p>
-              <button 
-                type="button"
-                onClick={() => setIsAuthModalOpen(true)}
-                className={styles.btnPrimary}
-                style={{ minWidth: '180px', justifyContent: 'center' }}
-              >
-                Sign In / Register
-              </button>
-            </div>
           ) : (
             <form onSubmit={handleSubmit} className={`${styles.formCard} glass`}>
               {/* Auto filled highlight */}
@@ -712,6 +714,8 @@ A Concerned Citizen`;
               </div>
             </form>
           )
+        )}
+          </>
         )}
       </div>
       <Footer />

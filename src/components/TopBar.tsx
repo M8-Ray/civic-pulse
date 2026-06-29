@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
@@ -12,10 +12,24 @@ export default function TopBar() {
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -50,16 +64,36 @@ export default function TopBar() {
         </button>
 
         {user ? (
-          <div className={styles.avatarContainer}>
-            <div className={styles.avatar} title={user.email || "User Profile"}>
+          <div className={styles.avatarContainer} ref={menuRef}>
+            <div 
+              className={styles.avatar} 
+              title={user.email || "User Profile"}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{ cursor: 'pointer' }}
+            >
               {user.email?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <div className={styles.logoutDropdown}>
-              <div className={styles.dropdownEmail}>{user.email}</div>
-              <button onClick={logout} className={styles.logoutBtn}>
-                Log Out
-              </button>
-            </div>
+            {isMenuOpen && (
+              <div className={styles.logoutDropdown}>
+                <div className={styles.dropdownEmail}>{user.email}</div>
+                <Link 
+                  href="/feed?tab=my" 
+                  className={styles.dropdownLink}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  My Reports
+                </Link>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }} 
+                  className={styles.logoutBtn}
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button 

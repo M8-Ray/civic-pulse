@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/AuthContext';
 import { 
@@ -14,14 +15,16 @@ import {
   IssueCategory, 
   IssueStatus 
 } from '@/data/mockIssues';
-import { Search, MapPin, Eye, Clock, MessageSquareOff, Flame, ThumbsUp, Trash2 } from 'lucide-react';
+import { Search, MapPin, Eye, Clock, MessageSquareOff, Flame, ThumbsUp, Trash2, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '@/components/Footer';
 import TopBar from '@/components/TopBar';
+import AuthModal from '@/components/AuthModal';
 import styles from '../../styles/feed.module.css';
 
 type SortOption = 'distance' | 'upvotes' | 'date';
 
-export default function FeedPage() {
+function FeedPageContent() {
   const { userLocation, isLoading: locationLoading, defaultLocation } = useLocation();
   const { user } = useAuth();
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -31,6 +34,19 @@ export default function FeedPage() {
   const [isIssuesLoading, setIsIssuesLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const [radiusLimit, setRadiusLimit] = useState<number | 'all'>(10);
+  const [activeMedia, setActiveMedia] = useState<{ url: string; type: 'image' | 'video'; title: string } | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
+
+  useEffect(() => {
+    if (tab === 'my') {
+      setActiveTab('my');
+    } else {
+      setActiveTab('all');
+    }
+  }, [tab]);
 
   // Center coordinate reference to sort by distance
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
@@ -350,7 +366,11 @@ export default function FeedPage() {
           ) : sortedIssues.length > 0 ? (
             sortedIssues.map((issue) => (
               <article key={issue.id} className={`${styles.card} glass-interactive`}>
-                <div className={styles.mediaSection}>
+                <div 
+                  className={styles.mediaSection}
+                  onClick={() => setActiveMedia({ url: issue.mediaUrl, type: issue.mediaType || 'image', title: issue.title })}
+                  title="Click to view full screen"
+                >
                   {issue.mediaType === 'video' ? (
                     <>
                       <video src={issue.mediaUrl} muted loop playsInline autoPlay className={styles.media} />
@@ -437,6 +457,30 @@ export default function FeedPage() {
                 </div>
               </article>
             ))
+          ) : activeTab === 'my' && !user ? (
+            <div className={`${styles.emptyState} glass`}>
+              <MessageSquareOff className={styles.emptyIcon} size={48} />
+              <h2 className={styles.emptyTitle}>Sign in to view your reports</h2>
+              <p>
+                Please sign in to view your past reports or submit new alerts. Requiring an account protects the registry against spam reports and false entries.
+              </p>
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                style={{
+                  marginTop: '8px',
+                  padding: '10px 24px',
+                  borderRadius: '8px',
+                  background: 'var(--accent-cyan)',
+                  color: '#080b11',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Sign In to Report Issue
+              </button>
+            </div>
           ) : (
             <div className={`${styles.emptyState} glass`}>
               <MessageSquareOff className={styles.emptyIcon} size={48} />
@@ -463,7 +507,53 @@ export default function FeedPage() {
           )}
         </div>
       </div>
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {activeMedia && (
+          <motion.div
+            className={styles.lightboxOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveMedia(null)}
+          >
+            <button 
+              className={styles.lightboxClose}
+              onClick={() => setActiveMedia(null)}
+              aria-label="Close modal"
+            >
+              <X size={20} />
+            </button>
+            <motion.div
+              className={styles.lightboxContent}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {activeMedia.type === 'video' ? (
+                <video src={activeMedia.url} controls autoPlay loop className={styles.lightboxMedia} />
+              ) : (
+                <img src={activeMedia.url} alt={activeMedia.title} className={styles.lightboxMedia} />
+              )}
+              <div className={styles.lightboxCaption}>
+                <h3>{activeMedia.title}</h3>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Footer />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
+  );
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '100px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading feed...</div>}>
+      <FeedPageContent />
+    </Suspense>
   );
 }

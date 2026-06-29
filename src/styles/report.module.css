@@ -2,7 +2,7 @@
   width: 100%;
   height: 100svh;
   overflow-y: auto;
-  padding: 84px 0 0 0;
+  padding: 120px 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,18 +21,22 @@
 .headerArea {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .title {
-  font-size: 1.75rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .subtitle {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .stepProgress {
@@ -502,7 +506,7 @@
 
 @media (max-width: 640px) {
   .reportContainer {
-    padding: 76px 0 0 0;
+    padding: 100px 0 0 0;
   }
 
   .reportContent {
@@ -510,7 +514,7 @@
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
   .scanContainer {
