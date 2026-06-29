@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import LocationPromptModal from "@/components/LocationPromptModal";
+import CivicBot from "@/components/CivicBot";
 import { LocationProvider } from "@/context/LocationContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -57,6 +58,7 @@ export default function RootLayout({
                 {children}
               </main>
               <BottomNav />
+              <CivicBot />
             </LocationProvider>
           </AuthProvider>
         </ThemeProvider>
