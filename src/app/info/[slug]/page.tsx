@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
+import TopBar from '@/components/TopBar';
 import styles from '../../../styles/info.module.css';
 
 interface InfoPageProps {
@@ -94,6 +95,7 @@ export default async function InfoPage({ params }: InfoPageProps) {
 
   return (
     <div className={styles.infoContainer}>
+      <TopBar />
       <div className={styles.infoContent}>
         <Link href="/" className={styles.backLink}>
           <ArrowLeft size={16} />

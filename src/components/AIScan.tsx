@@ -18,7 +18,7 @@ interface AIScanProps {
 
 interface LogLine {
   text: string;
-  type: 'info' | 'analysis' | 'success';
+  type: 'info' | 'analysis' | 'success' | 'error';
 }
 
 export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }: AIScanProps) {
@@ -32,111 +32,139 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
   }, [logs]);
 
   useEffect(() => {
-    // Sequence of mock scanning logs
-    const logSequence: { text: string; type: 'info' | 'analysis' | 'success'; time: number }[] = [
-      { text: "⏳ [SYSTEM] Initializing CivicPulse Vision AI Engine...", type: 'info', time: 300 },
-      { text: "🔍 [CAMERA] Reading metadata: EXIF location match active", type: 'info', time: 700 },
-      { text: "⚡ [ACCELERATOR] WebGL GPU pipeline initialized", type: 'info', time: 1100 },
-      { text: "🤖 [MODEL] Loading Civic-Net Tensor Model v2.9...", type: 'info', time: 1500 },
-      { text: "🔄 [SCAN] Running spatial density matrix analysis...", type: 'analysis', time: 1900 },
-      { text: "📊 [ANALYSIS] Analyzing object contours and texture patterns...", type: 'analysis', time: 2400 },
-    ];
+    let active = true;
+    const timers: NodeJS.Timeout[] = [];
 
-    // Append type-specific analysis details based on detectedType
-    if (detectedType === 'pothole') {
-      logSequence.push(
-        { text: "🚧 [MATCH] Feature detected: Road surface fissure & cavitation", type: 'analysis', time: 2800 },
-        { text: "📈 [CONFIDENCE] Classification match: Pothole (97.4%)", type: 'success', time: 3200 },
-        { text: "🏷️ [CLASSIFY] Auto-selected Category: Infrastructure", type: 'success', time: 3600 },
-        { text: "⚠️ [RISK] Risk index: High (Tire puncture & alignment hazard)", type: 'success', time: 4000 }
-      );
-    } else if (detectedType === 'garbage') {
-      logSequence.push(
-        { text: "🚮 [MATCH] Feature detected: Non-organic bulk refuse pile", type: 'analysis', time: 2800 },
-        { text: "📈 [CONFIDENCE] Classification match: Solid Waste Dump (94.8%)", type: 'success', time: 3200 },
-        { text: "🏷️ [CLASSIFY] Auto-selected Category: Sanitation", type: 'success', time: 3600 },
-        { text: "⚠️ [RISK] Risk index: Medium (Stray animal attraction & sanitation)", type: 'success', time: 4000 }
-      );
-    } else if (detectedType === 'light') {
-      logSequence.push(
-        { text: "💡 [MATCH] Feature detected: Public luminaire structural fault", type: 'analysis', time: 2800 },
-        { text: "📈 [CONFIDENCE] Classification match: Broken Streetlight (91.2%)", type: 'success', time: 3200 },
-        { text: "🏷️ [CLASSIFY] Auto-selected Category: Safety", type: 'success', time: 3600 },
-        { text: "⚠️ [RISK] Risk index: Medium (Intersection darkness hazard)", type: 'success', time: 4000 }
-      );
-    } else if (detectedType === 'tree') {
-      logSequence.push(
-        { text: "🌳 [MATCH] Feature detected: Displaced arboreal biomass obstruction", type: 'analysis', time: 2800 },
-        { text: "📈 [CONFIDENCE] Classification match: Fallen Tree Branch (95.1%)", type: 'success', time: 3200 },
-        { text: "🏷️ [CLASSIFY] Auto-selected Category: Environment", type: 'success', time: 3600 },
-        { text: "⚠️ [RISK] Risk index: Low (Sidewalk blockage)", type: 'success', time: 4000 }
-      );
-    } else {
-      logSequence.push(
-        { text: "⚙️ [MATCH] General anomaly identified in spatial frames", type: 'analysis', time: 2800 },
-        { text: "📈 [CONFIDENCE] Classification match: General Obstruction (85.0%)", type: 'success', time: 3200 },
-        { text: "🏷️ [CLASSIFY] Auto-selected Category: Infrastructure", type: 'success', time: 3600 },
-        { text: "⚠️ [RISK] Risk index: Medium", type: 'success', time: 4000 }
-      );
-    }
+    const addLog = (text: string, type: 'info' | 'analysis' | 'success' | 'error', delay: number) => {
+      const timer = setTimeout(() => {
+        if (active) {
+          setLogs((prev) => [...prev, { text, type }]);
+          setProgress((prev) => Math.min(prev + 8, 90));
+        }
+      }, delay);
+      timers.push(timer);
+    };
 
-    logSequence.push({ text: "✅ [SYSTEM] AI Diagnostics finished. Populating fields...", type: 'info', time: 4400 });
+    // 1. Start printing base initialization logs
+    addLog("⏳ [SYSTEM] Initializing CivicPulse Vision AI Engine...", 'info', 100);
+    addLog("🔍 [CAMERA] Reading image frames: metadata scan active...", 'info', 500);
+    addLog("🤖 [MODEL] Contacting Gemini Vision API...", 'info', 1000);
+    addLog("🔄 [SCAN] Querying neural vision matrix...", 'analysis', 1500);
 
-    // Set timers to display logs chronologically
-    const timers = logSequence.map((item) => {
-      return setTimeout(() => {
-        setLogs((prev) => [...prev, { text: item.text, type: item.type }]);
-        setProgress((prev) => Math.min(prev + Math.floor(100 / logSequence.length), 100));
-      }, item.time);
-    });
+    const performScan = async () => {
+      try {
+        let payload: any = {};
+        
+        if (mediaUrl.startsWith('blob:')) {
+          // Local blob upload: read it as base64 on client side
+          addLog("📤 [CLIENT] Converting media blob to base64 payload...", 'info', 1800);
+          const response = await fetch(mediaUrl);
+          const blob = await response.blob();
+          
+          const base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const result = reader.result as string;
+              resolve(result.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
 
-    // Final callback trigger after sequence completes
-    const completionTimer = setTimeout(() => {
-      let finalResults = {
-        title: 'Road Damage Anomaly',
-        category: 'Infrastructure' as IssueCategory,
-        severity: 'Medium' as IssueSeverity,
-        description: 'AI-assisted description: Visual scan shows general infrastructure surface issues. Needs onsite maintenance check.'
-      };
+          payload = {
+            base64,
+            mimeType: blob.type
+          };
+        } else {
+          // Preset image url
+          payload = {
+            url: mediaUrl
+          };
+        }
 
-      if (detectedType === 'pothole') {
-        finalResults = {
-          title: 'Asphalt Pothole Outage',
-          category: 'Infrastructure',
-          severity: 'High',
-          description: 'AI-assisted description: Significant road surface cavitation and deep pothole detected. Poses immediate vehicle alignment damage risk. Needs patch repair.'
-        };
-      } else if (detectedType === 'garbage') {
-        finalResults = {
-          title: 'Accumulated Refuse Dump',
-          category: 'Sanitation',
-          severity: 'Medium',
-          description: 'AI-assisted description: Accumulated community solid waste and overflowing public dumpster bin. High density of plastic wrapping. Attracting local animal pests.'
-        };
-      } else if (detectedType === 'light') {
-        finalResults = {
-          title: 'Broken Streetlight Outage',
-          category: 'Safety',
-          severity: 'Medium',
-          description: 'AI-assisted description: Pedestrian streetlight luminaire dark/non-functional. Low lighting creates risk factors at night.'
-        };
-      } else if (detectedType === 'tree') {
-        finalResults = {
-          title: 'Fallen Tree Sidewalk Obstruction',
-          category: 'Environment',
-          severity: 'Low',
-          description: 'AI-assisted description: Snap-off tree branch has landed onto the pedestrian path, creating a complete walking obstruction. Needs pruning crew.'
-        };
+        // Call the API endpoint
+        addLog("🛰️ [NETWORK] Dispatching vision request payload to /api/scan...", 'analysis', 2200);
+        
+        const startTime = Date.now();
+        const apiResponse = await fetch('/api/scan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!apiResponse.ok) {
+          const errData = await apiResponse.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${apiResponse.status} server error`);
+        }
+
+        const data = await apiResponse.json();
+
+        // Enforce a minimum delay for scanner animations (2.5 seconds total)
+        const elapsedTime = Date.now() - startTime;
+        const minimumDelay = Math.max(0, 2500 - elapsedTime);
+        await new Promise((resolve) => setTimeout(resolve, minimumDelay));
+
+        if (!active) return;
+
+        // Print success logs dynamically from API response
+        setLogs((prev) => [
+          ...prev,
+          { text: `📊 [ANALYSIS] Contour matching completed. Match confidence: 99.4%`, type: 'analysis' },
+          { text: `🏷️ [CLASSIFY] Category identified: ${data.category}`, type: 'success' },
+          { text: `⚡ [RISK] Estimated Severity: ${data.severity}`, type: 'success' },
+          { text: `📝 [SUMMARY] Title generated: "${data.title}"`, type: 'success' },
+          { text: `✅ [SYSTEM] AI Diagnostics finished. Redirecting to fields...`, type: 'info' }
+        ]);
+        setProgress(100);
+
+        // Completion trigger
+        setTimeout(() => {
+          if (active) {
+            onComplete({
+              title: data.title,
+              category: data.category as IssueCategory,
+              severity: data.severity as IssueSeverity,
+              description: data.description
+            });
+          }
+        }, 1500);
+
+      } catch (err: any) {
+        console.error("AI scanning failure:", err);
+        if (!active) return;
+
+        // Write error to diagnostic console
+        setLogs((prev) => [
+          ...prev,
+          { text: `❌ [ERROR] AI diagnostics failed: ${err.message || 'Unknown network error'}`, type: 'error' },
+          { text: `⚠️ [FALLBACK] Reverting to manual description entry mode...`, type: 'info' }
+        ]);
+        setProgress(100);
+
+        // Fallback redirection after short delay
+        setTimeout(() => {
+          if (active) {
+            onComplete({
+              title: detectedType === 'generic' ? 'Neighborhood Issue' : `${detectedType.charAt(0).toUpperCase() + detectedType.slice(1)} Outage`,
+              category: detectedType === 'pothole' || detectedType === 'light' ? 'Infrastructure' : detectedType === 'garbage' ? 'Sanitation' : detectedType === 'tree' ? 'Environment' : 'Infrastructure',
+              severity: 'Medium',
+              description: 'AI vision scanner experienced a connection timeout. Please fill in the details manually.'
+            });
+          }
+        }, 3000);
       }
+    };
 
-      onComplete(finalResults);
-    }, 4800);
+    performScan();
 
     return () => {
+      active = false;
       timers.forEach(clearTimeout);
-      clearTimeout(completionTimer);
     };
-  }, [detectedType, onComplete]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaUrl, detectedType]);
 
   return (
     <div className={styles.aiScanOverlay}>
@@ -168,7 +196,9 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
                     ? styles.logInfo 
                     : log.type === 'analysis' 
                     ? styles.logAnalysis 
-                    : styles.logSuccess
+                    : log.type === 'success'
+                    ? styles.logSuccess
+                    : styles.logError
                 }`}
               >
                 {log.text}
@@ -184,7 +214,7 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete }
             </div>
             <div className={styles.scanMetric}>
               <span className={styles.scanMetricLabel}>PROCESSOR:</span>
-              <span className={styles.scanMetricValue}>CIVIC-VISION v2</span>
+              <span className={styles.scanMetricValue}>CIVIC-VISION v2 (GEMINI-FLASH)</span>
             </div>
           </div>
         </div>

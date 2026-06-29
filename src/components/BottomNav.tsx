@@ -9,6 +9,10 @@ import styles from '../styles/components.module.css';
 export default function BottomNav() {
   const pathname = usePathname();
 
+  if (pathname === '/') {
+    return null;
+  }
+
   const navItems = [
     {
       href: '/feed',

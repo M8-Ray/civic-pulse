@@ -16,6 +16,7 @@ import {
 } from '@/data/mockIssues';
 import { Search, MapPin, Eye, Clock, MessageSquareOff, Flame, ThumbsUp, Trash2 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import TopBar from '@/components/TopBar';
 import styles from '../../styles/feed.module.css';
 
 type SortOption = 'distance' | 'upvotes' | 'date';
@@ -193,6 +194,7 @@ export default function FeedPage() {
 
   return (
     <div className={styles.feedContainer}>
+      <TopBar />
       <div className={styles.feedContent}>
         {/* Header Title */}
         <div className={styles.headerArea}>

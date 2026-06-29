@@ -2,14 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame, Camera, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Footer from '@/components/Footer';
+import TopBar from '@/components/TopBar';
 import styles from '../styles/landing.module.css';
 import { useLocation } from '@/context/LocationContext';
+import { useTheme } from '@/context/ThemeContext';
+
+const Aurora = dynamic(() => import('@/components/Aurora'), { ssr: false });
 
 export default function LandingPage() {
   const { userLocation, defaultLocation } = useLocation();
+  const { theme } = useTheme();
 
   // Word Flip Animation logic
   const typewriterWords = ["potholes", "broken streetlights", "water leaks", "trash overflows", "clogged drains"];
@@ -73,17 +79,28 @@ export default function LandingPage() {
 
   return (
     <div className={styles.landingContainer}>
+      <TopBar />
+      {theme === 'dark' && (
+        <div className={styles.auroraBg}>
+          <Aurora
+            colorStops={["#7cff67", "#B497CF", "#5227FF"]}
+            blend={0.5}
+            amplitude={1.0}
+            speed={0.5}
+          />
+        </div>
+      )}
       <div className={styles.landingContent}>
         {/* HERO SECTION */}
-        <motion.section 
+        <motion.section
           className={styles.hero}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           <motion.div className={styles.badge} variants={itemVariants}>
-            <Flame size={12} fill="currentColor" style={{ marginRight: '4px' }} />
-            <span>Community Dashboard v1.0</span>
+            <Sparkles size={12} fill="currentColor" style={{ marginRight: '4px' }} />
+            <span>powered by gemini ai</span>
           </motion.div>
 
           <motion.h1 className={styles.title} variants={itemVariants}>
@@ -123,7 +140,7 @@ export default function LandingPage() {
         </motion.section>
 
         {/* HOW IT WORKS SECTION */}
-        <motion.section 
+        <motion.section
           className={styles.howItWorksSection}
           initial="hidden"
           whileInView="visible"
@@ -136,7 +153,7 @@ export default function LandingPage() {
           </motion.p>
 
           <div className={styles.howItWorksGrid}>
-            <motion.div 
+            <motion.div
               className={styles.howItWorksCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.02 }}
@@ -151,7 +168,7 @@ export default function LandingPage() {
               </p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className={styles.howItWorksCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.02 }}
@@ -166,7 +183,7 @@ export default function LandingPage() {
               </p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className={styles.howItWorksCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.02 }}
@@ -183,8 +200,62 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
+        {/* FEATURES GRID */}
+        <motion.section
+          className={styles.featuresGrid}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={cardContainerVariants}
+        >
+          <motion.div
+            className={styles.featureCard}
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <div className={styles.iconBox}>
+              <Sparkles size={20} />
+            </div>
+            <h3 className={styles.featureTitle}>Vision AI Autofill</h3>
+            <p className={styles.featureText}>
+              Snap a photo or record a short video. Our local computer vision models detect categories, estimate severity, and autofill location parameters immediately.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className={styles.featureCard}
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <div className={styles.iconBox}>
+              <Map size={20} />
+            </div>
+            <h3 className={styles.featureTitle}>Precision Registry</h3>
+            <p className={styles.featureText}>
+              Track street hazards and active resolutions on a vector grid map. Dynamic location sorting prioritizes active issues based on distance from your coordinates.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className={styles.featureCard}
+            variants={cardVariants}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <div className={styles.iconBox}>
+              <ThumbsUp size={20} />
+            </div>
+            <h3 className={styles.featureTitle}>Citizen Prioritization</h3>
+            <p className={styles.featureText}>
+              Elevate critical problems with community upvoting. Help municipalities prioritize repairs efficiently by showing where local demand is highest.
+            </p>
+          </motion.div>
+        </motion.section>
+
         {/* VISUAL SPOTLIGHTS REGISTRY */}
-        <motion.section 
+        <motion.section
           className={styles.ledgerSection}
           initial="hidden"
           whileInView="visible"
@@ -204,7 +275,7 @@ export default function LandingPage() {
 
           <div className={styles.spotlightGrid}>
             {/* CARD 1: PIPE BURST */}
-            <motion.div 
+            <motion.div
               className={styles.spotlightCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.015 }}
@@ -235,7 +306,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* CARD 2: POTHOLE */}
-            <motion.div 
+            <motion.div
               className={styles.spotlightCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.015 }}
@@ -266,7 +337,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* CARD 3: FALLEN TREE */}
-            <motion.div 
+            <motion.div
               className={styles.spotlightCard}
               variants={cardVariants}
               whileHover={{ y: -8, scale: 1.015 }}
@@ -296,60 +367,6 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </div>
-        </motion.section>
-
-        {/* FEATURES GRID */}
-        <motion.section 
-          className={styles.featuresGrid}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={cardContainerVariants}
-        >
-          <motion.div 
-            className={styles.featureCard} 
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <Sparkles size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Vision AI Autofill</h3>
-            <p className={styles.featureText}>
-              Snap a photo or record a short video. Our local computer vision models detect categories, estimate severity, and autofill location parameters immediately.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className={styles.featureCard} 
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <Map size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Precision Registry</h3>
-            <p className={styles.featureText}>
-              Track street hazards and active resolutions on a vector grid map. Dynamic location sorting prioritizes active issues based on distance from your coordinates.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className={styles.featureCard} 
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <ThumbsUp size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Citizen Prioritization</h3>
-            <p className={styles.featureText}>
-              Elevate critical problems with community upvoting. Help municipalities prioritize repairs efficiently by showing where local demand is highest.
-            </p>
-          </motion.div>
         </motion.section>
       </div>
       <Footer />

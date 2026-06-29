@@ -2,6 +2,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
+import TopBar from '@/components/TopBar';
 
 const MapComponent = dynamic(
   () => import('@/components/MapComponent'),
@@ -36,5 +37,10 @@ const MapComponent = dynamic(
 );
 
 export default function MapPage() {
-  return <MapComponent />;
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <TopBar />
+      <MapComponent />
+    </div>
+  );
 }

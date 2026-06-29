@@ -35,6 +35,7 @@ import {
   Info
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import TopBar from '@/components/TopBar';
 import styles from '../../styles/municipal.module.css';
 
 interface MockUser {
@@ -255,6 +256,7 @@ export default function MunicipalPortalPage() {
 
   return (
     <div className={styles.container}>
+      <TopBar />
       {activeUser ? (
         /* ==================== DASHBOARD VIEW ==================== */
         <div className={styles.content}>

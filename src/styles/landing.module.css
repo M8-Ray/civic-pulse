@@ -17,9 +17,24 @@
   position: relative;
 }
 
+:global([data-theme="dark"]) .landingContainer {
+  background-image: none;
+  background-color: var(--bg-primary);
+}
 
+.auroraBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
 
 .landingContent {
+  position: relative;
   width: 100%;
   max-width: 900px;
   display: flex;
@@ -658,4 +673,21 @@
   .featureCard {
     padding: 24px;
   }
+}
+
+.customFeatureCard {
+  background: var(--bg-glass) !important;
+  border: 1px solid var(--border-light) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  border-radius: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 16px !important;
+}
+
+:global([data-theme="light"]) .customFeatureCard {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }

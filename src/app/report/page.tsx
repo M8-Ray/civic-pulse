@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/components/AuthModal';
-import { saveIssue, calculateDistance, IssueCategory, IssueSeverity, CITY_CENTERS } from '@/data/mockIssues';
+import { saveIssue, calculateDistance, IssueCategory, IssueSeverity, CITY_CENTERS, getIssues, toggleUpvoteIssue, Issue } from '@/data/mockIssues';
 import { Camera, MapPin, Sparkles, UploadCloud, ChevronRight, AlertCircle } from 'lucide-react';
 import Footer from '@/components/Footer';
+import TopBar from '@/components/TopBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../../styles/report.module.css';
 
@@ -90,6 +91,9 @@ export default function ReportPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submittedIssue, setSubmittedIssue] = useState<any | null>(null);
+  
+  // Duplicate verification modal states
+  const [duplicateIssue, setDuplicateIssue] = useState<Issue | null>(null);
 
   // Email modal states
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -156,12 +160,32 @@ export default function ReportPage() {
   };
 
   // Submit report flow
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent, forceSubmit = false) => {
+    if (e) e.preventDefault();
     if (!title || !description || !mediaUrl || isSubmitting) return;
 
     setIsSubmitting(true);
     setErrorMessage(null);
+
+    // Verify duplicates unless forced bypass is selected
+    if (!forceSubmit) {
+      try {
+        const activeIssues = await getIssues(lat, lng, user?.id);
+        const duplicate = activeIssues.find(issue => {
+          if (issue.status === 'Resolved') return false;
+          const dist = calculateDistance(lat, lng, issue.lat, issue.lng);
+          return dist <= 0.1; // 100 meters (0.1 km)
+        });
+
+        if (duplicate) {
+          setDuplicateIssue(duplicate);
+          setIsSubmitting(false);
+          return;
+        }
+      } catch (err) {
+        console.warn("Duplicate report validation check failed:", err);
+      }
+    }
 
     const issueData = {
       title,
@@ -201,9 +225,7 @@ export default function ReportPage() {
 "${submittedIssue.description}"
 
 📍 *Incident Location:* ${mapsUrl}
-🖼️ *Photo / Video:* ${submittedIssue.mediaUrl}
-
-👉 *Support & track this report on CivicPulse:* ${dashboardUrl}`;
+🖼️ *Photo / Video:* ${submittedIssue.mediaUrl}`;
 
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -268,9 +290,7 @@ This issue has been reported and verified by local residents on the CivicPulse l
 Kindly assign a maintenance crew to inspect and resolve this issue at the earliest.
 
 Sincerely,
-A Concerned Citizen
-
-(Track updates on the public dashboard: ${dashboardUrl})`;
+A Concerned Citizen`;
 
       setEmailDetails({
         to,
@@ -292,6 +312,7 @@ A Concerned Citizen
 
   return (
     <div className={styles.reportContainer}>
+      <TopBar />
       <div className={styles.reportContent}>
         
         {/* Header Title */}
@@ -935,6 +956,121 @@ A Concerned Citizen
                   </div>
                 </>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Duplicate Verification Modal */}
+      <AnimatePresence>
+        {duplicateIssue && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setDuplicateIssue(null)}
+          >
+            <motion.div
+              className={`${styles.modalContent} glass`}
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: '560px' }}
+            >
+              <div className={styles.modalHeader}>
+                <h3 className={styles.modalTitle} style={{ color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  ⚠️ Potential Duplicate Report
+                </h3>
+                <button onClick={() => setDuplicateIssue(null)} className={styles.modalCloseBtn}>✕</button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '4px 0' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                  An unresolved issue is already active **within 100 meters** of this location. To maintain a clean database and consolidate municipal focus, please consider upvoting the existing report instead of creating a duplicate.
+                </p>
+
+                {/* Side-by-Side Split Card Visual Comparison */}
+                <div className={styles.compareGrid}>
+                  {/* Left Card: User's unsaved draft */}
+                  <div className={styles.compareCard}>
+                    <span className={styles.compareCardHeader}>Your Draft Report</span>
+                    <div className={styles.compareThumbWrapper}>
+                      {mediaType === 'video' ? (
+                        <video src={mediaUrl || undefined} muted className={styles.compareThumb} />
+                      ) : (
+                        <img src={mediaUrl || ''} alt="Unsaved draft preview" className={styles.compareThumb} />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className={styles.compareTitle}>{title || "Untitled Incident"}</h4>
+                      <p className={styles.compareSubtitle}>📁 {category}</p>
+                    </div>
+                  </div>
+
+                  {/* Right Card: Existing report */}
+                  <div className={styles.compareCard} style={{ borderColor: 'rgba(245, 158, 11, 0.4)', background: 'rgba(245, 158, 11, 0.02)' }}>
+                    <span className={styles.compareCardHeader} style={{ color: 'var(--accent-amber)' }}>Existing Active Report</span>
+                    <div className={styles.compareThumbWrapper}>
+                      {duplicateIssue.mediaType === 'video' ? (
+                        <video src={duplicateIssue.mediaUrl} muted className={styles.compareThumb} />
+                      ) : (
+                        <img src={duplicateIssue.mediaUrl} alt="Existing issue thumbnail" className={styles.compareThumb} />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className={styles.compareTitle}>{duplicateIssue.title}</h4>
+                      <p className={styles.compareSubtitle}>
+                        🔥 {duplicateIssue.upvotes} Citizens Upvoted
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await toggleUpvoteIssue(duplicateIssue.id, lat, lng, user?.id);
+                      router.push(`/map?lat=${duplicateIssue.lat}&lng=${duplicateIssue.lng}&id=${duplicateIssue.id}`);
+                      setDuplicateIssue(null);
+                    } catch (err) {
+                      console.error("Failed to upvote duplicate:", err);
+                    }
+                  }}
+                  className={styles.btnPrimary}
+                  style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}
+                >
+                  <span>👍 Upvote Existing & View on Map</span>
+                </button>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      setDuplicateIssue(null);
+                      handleSubmit(e, true);
+                    }}
+                    className={styles.btnSecondary}
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.85rem' }}
+                  >
+                    Submit Anyway
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setDuplicateIssue(null)}
+                    className={styles.btnSecondary}
+                    style={{ flex: 1, justifyContent: 'center', borderColor: 'transparent', fontSize: '0.85rem' }}
+                  >
+                    Adjust Location
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

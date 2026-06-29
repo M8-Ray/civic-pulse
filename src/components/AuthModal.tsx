@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { X, Lock, Mail, Loader2 } from 'lucide-react';
 import styles from '../styles/components.module.css';
@@ -17,8 +18,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +95,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div className={styles.authModalOverlay} onClick={onClose}>
       <div className={`${styles.authModal} glass`} onClick={(e) => e.stopPropagation()}>
         <button className={styles.authCloseBtn} onClick={onClose} aria-label="Close modal">
@@ -97,19 +103,19 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         <div className={styles.authHeader}>
-          <h2>CivicPulse Portal</h2>
+          <h2>CivicPulse Login</h2>
           <p>Join to report neighborhood issues and manage your community dashboard</p>
         </div>
 
         {/* Tab switcher */}
         <div className={styles.authTabs}>
-          <button 
+          <button
             className={`${styles.authTab} ${!isSignUp ? styles.authTabActive : ''}`}
             onClick={() => { setIsSignUp(false); setError(null); setMessage(null); }}
           >
             Sign In
           </button>
-          <button 
+          <button
             className={`${styles.authTab} ${isSignUp ? styles.authTabActive : ''}`}
             onClick={() => { setIsSignUp(true); setError(null); setMessage(null); }}
           >
@@ -174,6 +180,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
