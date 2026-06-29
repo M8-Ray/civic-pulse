@@ -307,12 +307,12 @@
 }
 
 .btnPrimary:hover {
-  background: #00e0ef;
-  box-shadow: var(--shadow-neon);
+  background: var(--accent-cyan);
+  opacity: 0.9;
 }
 
 .btnSecondary {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
   padding: 10px 20px;
@@ -324,8 +324,21 @@
 }
 
 .btnSecondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
   color: var(--text-primary);
+}
+
+:global([data-theme="light"]) .btnSecondary {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .btnSecondary:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 /* AI Scanner Visual Overlay Styling */

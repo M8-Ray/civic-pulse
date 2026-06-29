@@ -645,7 +645,9 @@
 .avatarContainer {
   position: relative;
   cursor: pointer;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  padding-left: 90px;
 }
 
 .logoutDropdown {
@@ -657,12 +659,198 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  padding: 12px;
-  min-width: 180px;
+  padding: 16px;
+  min-width: 290px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   flex-direction: column;
+  gap: 10px;
+}
+
+/* Gamification Badge in Header */
+.xpBadge {
+  position: absolute;
+  right: 42px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);
+  transition: all var(--transition-fast);
+  z-index: 1;
+}
+
+.xpBadge:hover {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+.xpLabel {
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.xpVal {
+  color: var(--text-primary);
+}
+
+/* Gamification Card in Profile Menu Dropdown */
+.gamificationCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.levelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.levelName {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.levelNumber {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.progressBarWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-indigo) 0%, var(--accent-cyan) 100%);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+  transition: width 0.4s ease;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.badgesLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.badgesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+}
+
+.badgeItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.01);
+  transition: all var(--transition-fast);
+  cursor: help;
+}
+
+.badgeItemLocked {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.badgeItemLocked:hover {
+  opacity: 0.6;
+}
+
+.badgeItemEarned {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.badgeItemEarned:hover {
+  border-color: var(--badge-color, var(--accent-cyan));
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.badgeItemIcon {
+  font-size: 1.1rem;
+}
+
+.badgeItemName {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Light mode adaptions */
+:global([data-theme="light"]) .xpBadge {
+  background: rgba(0, 180, 255, 0.06);
+  border: 1px solid rgba(0, 180, 255, 0.18);
+  box-shadow: none;
+}
+
+:global([data-theme="light"]) .xpLabel {
+  color: #0284c7;
+}
+
+:global([data-theme="light"]) .gamificationCard {
+  background: rgba(0, 0, 0, 0.01);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+:global([data-theme="light"]) .progressBarContainer {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:global([data-theme="light"]) .badgeItemEarned {
+  background: rgba(0, 0, 0, 0.01);
 }
 
 .dropdownEmail {
@@ -676,25 +864,25 @@
 .dropdownLink {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--accent-cyan);
+  color: var(--text-secondary);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
   text-align: center;
   border: 1px solid var(--border-light);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-secondary);
   display: block;
   text-decoration: none;
 }
 
 .dropdownLink:hover {
-  background: var(--accent-cyan-glow);
-  color: #fff;
-  border-color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
 }
 
 .logoutBtn {
-  background: rgba(255, 65, 108, 0.1);
+  background: var(--bg-secondary);
   border: 1px solid var(--accent-crimson);
   color: var(--accent-crimson);
   padding: 6px 12px;
@@ -710,6 +898,29 @@
 .logoutBtn:hover {
   background: var(--accent-crimson);
   color: #fff;
+}
+
+:global([data-theme="light"]) .dropdownLink {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .dropdownLink:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+:global([data-theme="light"]) .logoutBtn {
+  background: #ffffff;
+  border-color: #f87171;
+  color: #ef4444;
+}
+
+:global([data-theme="light"]) .logoutBtn:hover {
+  background: #ef4444;
+  color: #ffffff;
 }
 
 /* Location Permission Prompt Modal */

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLocation } from '@/context/LocationContext';
 import { useAuth } from '@/context/AuthContext';
 import AuthModal from '@/components/AuthModal';
+import { useGamification } from '@/context/GamificationContext';
 import { saveIssue, calculateDistance, IssueCategory, IssueSeverity, CITY_CENTERS, getIssues, toggleUpvoteIssue, Issue } from '@/data/mockIssues';
 import { Camera, MapPin, Sparkles, UploadCloud, ChevronRight, AlertCircle } from 'lucide-react';
 import Footer from '@/components/Footer';
@@ -71,6 +72,7 @@ export default function ReportPage() {
   const router = useRouter();
   const { userLocation, defaultLocation, isLoading: locationLoading } = useLocation();
   const { user } = useAuth();
+  const { registerReport } = useGamification();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Wizard state
@@ -204,6 +206,7 @@ export default function ReportPage() {
     try {
       const newIssue = await saveIssue(issueData, defaultLocation.lat, defaultLocation.lng, user?.id);
       setSubmittedIssue(newIssue);
+      registerReport();
     } catch (err: any) {
       console.error("Failed to submit issue:", err);
       setErrorMessage(err.message || "Something went wrong while submitting the issue. Please try again.");

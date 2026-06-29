@@ -100,7 +100,7 @@
 }
 
 .filterBtn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
   padding: 6px 14px;
@@ -112,14 +112,32 @@
 }
 
 .filterBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
 .filterBtnActive {
-  background: var(--accent-cyan-glow);
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  background: var(--accent-cyan) !important;
+  border-color: var(--accent-cyan) !important;
+  color: #080b11 !important;
+}
+
+:global([data-theme="light"]) .filterBtn {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .filterBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+:global([data-theme="light"]) .filterBtnActive {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
 }
 
 /* Grid of Cards */
@@ -243,7 +261,7 @@
 }
 
 .resolveVoteBtn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
   padding: 5px 10px;
@@ -259,16 +277,34 @@
 }
 
 .resolveVoteBtn:hover {
-  background: rgba(5, 255, 197, 0.1);
-  border-color: var(--accent-emerald);
-  color: var(--accent-emerald);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .resolveVoteBtnActive {
   background: var(--accent-emerald) !important;
   border-color: var(--accent-emerald) !important;
   color: #080b11 !important;
-  box-shadow: 0 0 10px var(--accent-emerald-glow);
+  box-shadow: none !important;
+}
+
+:global([data-theme="light"]) .resolveVoteBtn {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .resolveVoteBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+:global([data-theme="light"]) .resolveVoteBtnActive {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
 }
 
 .description {
@@ -323,7 +359,7 @@
 }
 
 .upvoteBtn {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
   padding: 6px 12px;
@@ -338,16 +374,34 @@
 }
 
 .upvoteBtn:hover {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .upvoteBtnActive {
   background: var(--accent-cyan) !important;
   border-color: var(--accent-cyan) !important;
   color: #080b11 !important;
-  box-shadow: 0 0 10px var(--accent-cyan-glow);
+  box-shadow: none !important;
+}
+
+:global([data-theme="light"]) .upvoteBtn {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+:global([data-theme="light"]) .upvoteBtn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+:global([data-theme="light"]) .upvoteBtnActive {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
 }
 
 .mapLink {

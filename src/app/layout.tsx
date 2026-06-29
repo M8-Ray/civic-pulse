@@ -3,9 +3,11 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import LocationPromptModal from "@/components/LocationPromptModal";
 import CivicBot from "@/components/CivicBot";
+import GamificationAlerts from "@/components/GamificationAlerts";
 import { LocationProvider } from "@/context/LocationContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { GamificationProvider } from "@/context/GamificationContext";
 
 export const metadata: Metadata = {
   title: "CivicPulse — Live Community Issue Tracker",
@@ -52,14 +54,17 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <AuthProvider>
-            <LocationProvider>
-              <LocationPromptModal />
-              <main style={{ flex: 1, position: 'relative', height: '100%', width: '100%' }}>
-                {children}
-              </main>
-              <BottomNav />
-              <CivicBot />
-            </LocationProvider>
+            <GamificationProvider>
+              <LocationProvider>
+                <LocationPromptModal />
+                <main style={{ flex: 1, position: 'relative', height: '100%', width: '100%' }}>
+                  {children}
+                </main>
+                <BottomNav />
+                <CivicBot />
+                <GamificationAlerts />
+              </LocationProvider>
+            </GamificationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

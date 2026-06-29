@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '@/components/Footer';
 import TopBar from '@/components/TopBar';
 import AuthModal from '@/components/AuthModal';
+import { useGamification } from '@/context/GamificationContext';
 import styles from '../../styles/feed.module.css';
 
 type SortOption = 'distance' | 'upvotes' | 'date';
@@ -27,6 +28,7 @@ type SortOption = 'distance' | 'upvotes' | 'date';
 function FeedPageContent() {
   const { userLocation, isLoading: locationLoading, defaultLocation } = useLocation();
   const { user } = useAuth();
+  const { registerUpvote, registerResolveVote } = useGamification();
   const [issues, setIssues] = useState<Issue[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<IssueCategory | 'All'>('All');
@@ -82,6 +84,10 @@ function FeedPageContent() {
       setIsAuthModalOpen(true);
       return;
     }
+    const issueToUpvote = issues.find(i => i.id === id);
+    if (issueToUpvote) {
+      registerUpvote(!issueToUpvote.userUpvoted);
+    }
     // Optimistic UI updates
     setIssues((prevIssues) =>
       prevIssues.map((issue) => {
@@ -109,6 +115,10 @@ function FeedPageContent() {
 
   // Handle resolution voting
   const handleResolveVote = async (id: string) => {
+    const issueToResolve = issues.find(i => i.id === id);
+    if (issueToResolve) {
+      registerResolveVote(!issueToResolve.userResolvedVoted);
+    }
     // Optimistic UI updates
     setIssues((prevIssues) =>
       prevIssues.map((issue) => {

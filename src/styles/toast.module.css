@@ -1,0 +1,173 @@
+.toastContainer {
+  position: fixed;
+  top: 96px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 360px;
+  width: calc(100% - 48px);
+}
+
+.xpToast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-light);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-main);
+  pointer-events: auto;
+  min-width: 250px;
+  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.xpToastPositive {
+  border-left: 4px solid var(--accent-cyan);
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
+}
+
+.xpToastNegative {
+  border-left: 4px solid var(--accent-crimson);
+  box-shadow: 0 4px 20px rgba(255, 65, 108, 0.15);
+}
+
+.xpAmount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--font-sans);
+}
+
+.xpAmountPositive {
+  color: var(--accent-cyan);
+}
+
+.xpAmountNegative {
+  color: var(--accent-crimson);
+}
+
+.xpDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.xpReason {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.xpSub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.badgeToast {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(17, 22, 34, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 170, 0, 0.3);
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 25px rgba(255, 170, 0, 0.2);
+  pointer-events: auto;
+  min-width: 280px;
+  animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glowing background overlay for Badge Unlocks */
+.badgeToast::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 170, 0, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+  animation: rotate 6s linear infinite;
+  z-index: 0;
+}
+
+.badgeIconWrapper {
+  font-size: 2.2rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 1s infinite alternate;
+}
+
+.badgeInfo {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.badgeTitle {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-amber);
+}
+
+.badgeName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.badgeDesc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* Theme adaptation for light mode */
+:global([data-theme="light"]) .xpToast {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+:global([data-theme="light"]) .badgeToast {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 170, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 170, 0, 0.15);
+}
+:global([data-theme="light"]) .badgeName {
+  color: #0f172a;
+}
