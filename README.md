@@ -1,8 +1,42 @@
 # 🏛️ CiviLog
 
 > **An AI-powered live registry and routing console for community-driven hazard reporting.**
+>
+> 🌐 **Live Demo:** [CiviLog App](https://civic-pulse-1063460291701.asia-south1.run.app/)
 
 CiviLog bridges the gap between citizens, local neighborhoods, and municipal bodies. It empowers residents to document, verify, and resolve local street grievances (potholes, broken streetlights, water leaks, trash overflows) by automating media verification, proximity locks, and dispatch channels.
+
+---
+
+## 📸 App Previews
+
+<div align="center">
+  <h3>1. Landing Page</h3>
+  <img src="screenshots/Screenshot 2026-06-30 160141.png" alt="Landing Page" width="700" style="border-radius: 12px; margin-bottom: 24px;" />
+  
+  <table width="100%">
+    <tr>
+      <td width="50%" align="center">
+        <strong>2. Issue Feed</strong><br/>
+        <img src="screenshots/Screenshot 2026-06-30 160425.png" alt="Issue Feed" width="100%" style="border-radius: 10px; margin-top: 8px;" />
+      </td>
+      <td width="50%" align="center">
+        <strong>3. Map Dashboard</strong><br/>
+        <img src="screenshots/Screenshot 2026-06-30 160524.png" alt="Map Dashboard" width="100%" style="border-radius: 10px; margin-top: 8px;" />
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center">
+        <strong>4. Report Issue</strong><br/>
+        <img src="screenshots/Screenshot 2026-06-30 160537.png" alt="Report Issue" width="100%" style="border-radius: 10px; margin-top: 8px;" />
+      </td>
+      <td width="50%" align="center">
+        <strong>5. AI chatbot</strong><br/>
+        <img src="screenshots/Screenshot 2026-06-30 160836.png" alt="AI chatbot" width="100%" style="border-radius: 10px; margin-top: 8px;" />
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
@@ -22,9 +56,9 @@ Traditional civic complaint processes are heavily fragmented:
 
 ### 1. 🤖 Vision AI Autofill
 - Powered by **Google Gemini API** integration.
-- Citizens snap a photo of street damage; CiviLog detects the issue category (e.g., *Infrastructure*, *Sanitation*), estimates severity (*High*, *Medium*, *Low*), and drafts structural details instantly.
+- Citizens snap a photo of street damage; CiviLog detects the issue category (e.g., *Infrastructure*, *Sanitation*), estimates severity (*High*, *Medium*, *Low*), and drafts structural details instantly. AI also rejects photos that are not related to the issue.
 
-### 2. 📢 Instantly Share ISSUE to Social Media
+### 2. 📢 Share Issue to Social Media
 - Auto-drafts formatted templates optimized for one-click sharing across **WhatsApp** and **X (Twitter)**, accelerating community awareness.
 
 ### 3. 📯 Auto Email Municipal Corporations
@@ -57,12 +91,19 @@ Traditional civic complaint processes are heavily fragmented:
 | :--- | :--- |
 | **Next.js 16 (Turbopack)** | Core Framework & App Routing |
 | **React 19** | Component Architecture & Client Hooks |
-| **Supabase (PostgreSQL)** | Database Registry & Real-Time Storage Buckets |
+| **Leaflet & OpenStreetMap** | Interactive mapping tile layers, coordinates pinning, and zone locks |
+| **Supabase (PostgreSQL)** | Database Registry & Real-Time Media Storage Buckets |
 | **Gemini-3.1-Flash API** | Vision AI media scans & conversational Chatbot queries |
-| **Framer Motion** | Micro-animations, slide guides, and card transits |
-| **Vanilla CSS Modules** | Custom design tokens, glassmorphism UI, & responsive dark modes |
-| **Lucide React** | Cohesive vector typography icon sets |
+| **Framer Motion** | Micro-animations, entrance cues, sliders, and card transitions |
+| **OGL (WebGL Canvas)** | Hardware-accelerated dynamic interactive background layers (fluid auroras) |
+| **Lenis** | Core fluid smooth-scroll physics wrapper |
+| **Vanilla CSS Modules** | Custom theme tokens, glassmorphism UI layouts, and styling |
+| **Lucide React** | Cohesive vector iconography sets |
 
+Additional development & infrastructure toolchains:
+- **Google Antigravity IDE**: Development workspace environment
+- **Google AI Studio**: Gemini system instructions profiling and prototyping
+- **Google Cloud Run**: Managed docker container deployment hosting platform
 ---
 
 ## 📂 Project Architecture

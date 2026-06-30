@@ -115,6 +115,10 @@ function FeedPageContent() {
 
   // Handle resolution voting
   const handleResolveVote = async (id: string) => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
     const issueToResolve = issues.find(i => i.id === id);
     if (issueToResolve) {
       registerResolveVote(!issueToResolve.userResolvedVoted);

@@ -170,6 +170,21 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <span>{isSignUp ? 'Create Free Account' : 'Sign In to Dashboard'}</span>
             )}
           </button>
+
+          {!isSignUp && (
+            <button
+              type="button"
+              className={styles.mockAuthBtn}
+              onClick={() => {
+                setEmail('demo@example.com');
+                setPassword('demo1234');
+                setError(null);
+              }}
+              disabled={loading}
+            >
+              🔑 Use Mock Sign In (Demo Account)
+            </button>
+          )}
         </form>
 
         <div className={styles.authFooter}>

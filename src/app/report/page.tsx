@@ -41,33 +41,6 @@ const AIScan = dynamic(
   { ssr: false }
 );
 
-const DEMO_PRESETS = [
-  {
-    type: 'pothole' as const,
-    label: 'Pothole',
-    mediaUrl: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?w=800&auto=format&fit=crop&q=60',
-    mediaType: 'image' as const,
-  },
-  {
-    type: 'garbage' as const,
-    label: 'Garbage Bin',
-    mediaUrl: 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=800&auto=format&fit=crop&q=60',
-    mediaType: 'image' as const,
-  },
-  {
-    type: 'light' as const,
-    label: 'Streetlight',
-    mediaUrl: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&auto=format&fit=crop&q=60',
-    mediaType: 'image' as const,
-  },
-  {
-    type: 'tree' as const,
-    label: 'Tree Branch',
-    mediaUrl: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&auto=format&fit=crop&q=60',
-    mediaType: 'image' as const,
-  },
-];
-
 export default function ReportPage() {
   const router = useRouter();
   const { userLocation, defaultLocation, isLoading: locationLoading } = useLocation();
@@ -133,16 +106,6 @@ export default function ReportPage() {
     const isVideo = file.type.startsWith('video/');
     setMediaType(isVideo ? 'video' : 'image');
     setDetectedType('generic');
-    
-    // Proceed to AI scanning step
-    setStep(2);
-  };
-
-  // Handle picking preset mock files
-  const handlePresetSelect = (preset: typeof DEMO_PRESETS[number]) => {
-    setMediaUrl(preset.mediaUrl);
-    setMediaType(preset.mediaType);
-    setDetectedType(preset.type);
     
     // Proceed to AI scanning step
     setStep(2);
@@ -408,29 +371,6 @@ A Concerned Citizen`;
                 <span>Camera / Gallery</span>
               </div>
             </label>
-
-            {/* Presets Grid */}
-            <div className="glass" style={{ borderRadius: 'var(--radius-md)', padding: '16px' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '10px', textTransform: 'uppercase' }}>
-                Quick Test Presets
-              </h4>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-                Select a preset photo below to trigger AI analysis and map plotting instantly:
-              </p>
-              <div className={styles.demoGrid}>
-                {DEMO_PRESETS.map((preset) => (
-                  <button
-                    key={preset.label}
-                    onClick={() => handlePresetSelect(preset)}
-                    className={styles.demoItem}
-                    aria-label={`Select demo preset ${preset.label}`}
-                  >
-                    <img src={preset.mediaUrl} alt={preset.label} className={styles.demoThumb} />
-                    <span className={styles.demoLabel}>{preset.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 

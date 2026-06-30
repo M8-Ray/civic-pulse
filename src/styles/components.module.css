@@ -563,6 +563,29 @@
   cursor: not-allowed;
 }
 
+.mockAuthBtn {
+  background: transparent;
+  color: var(--accent-cyan);
+  border: 1px dashed var(--accent-cyan);
+  border-radius: var(--radius-sm);
+  padding: 10px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.mockAuthBtn:hover {
+  background: var(--accent-cyan-glow);
+  color: var(--text-primary);
+  border-style: solid;
+}
+
 .authSpinner {
   animation: auth-spin 1.2s infinite linear;
 }
