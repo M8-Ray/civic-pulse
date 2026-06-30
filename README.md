@@ -66,7 +66,7 @@ Traditional civic complaint processes are heavily fragmented:
 
 ### 4. 👥 Citizen Voting
 - Neighbors can view and upvote local reports.
-- Reports gain urgency based on vote counts. Accumulating a **3-vote threshold** automatically updates the ticket's progress and moves it to a resolved state.
+- Reports gain urgency based on vote counts. Accumulating a **5-vote threshold** automatically updates the ticket's progress and moves it to a resolved state.
 
 ### 5. 🛡️ Duplicate Issues Prevention
 - Actively scans coordinate quadrants. If an unresolved ticket of the same category exists nearby, the system flags it, prompting users to upvote the existing marker instead of creating duplicate records.

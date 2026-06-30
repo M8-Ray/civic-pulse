@@ -268,7 +268,7 @@ export default function LandingPage() {
               <div className={styles.cardContent}>
                 <h3 className={styles.bentoCardTitle}>Citizen Resolve</h3>
                 <p className={styles.bentoCardText}>
-                  Citizens upvote reports. Reaching 3 resolution votes automatically marks issues as resolved on the live registry.
+                  Citizens upvote reports. Reaching 5 resolution votes automatically marks issues as resolved on the live registry.
                 </p>
               </div>
             </motion.div>

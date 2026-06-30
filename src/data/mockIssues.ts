@@ -510,7 +510,7 @@ export async function getIssues(centerLat: number, centerLng: number, currentUse
       const userUpvoted = upvotedIds.includes(id);
       const userResolvedVoted = resolvedVotedIds.includes(id);
       const resolvedVotes = userResolvedVoted ? 1 : 0;
-      const status = seedStatuses[id] || ((resolvedVotes >= 3 || issue.status === 'Resolved') ? 'Resolved' : issue.status);
+      const status = seedStatuses[id] || ((resolvedVotes >= 5 || issue.status === 'Resolved') ? 'Resolved' : issue.status);
 
       return {
         id,
@@ -700,7 +700,7 @@ export function voteLocalIssueResolved(id: string, centerLat: number, centerLng:
       }
 
       let newStatus = issue.status;
-      if (votes >= 3) {
+      if (votes >= 5) {
         newStatus = 'Resolved';
       } else if (issue.status === 'Resolved') {
         newStatus = 'Reported';

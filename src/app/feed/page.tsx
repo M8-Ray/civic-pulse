@@ -132,7 +132,7 @@ function FeedPageContent() {
           const nextVotes = isVoted ? currentVotes + 1 : Math.max(0, currentVotes - 1);
           
           let nextStatus = issue.status;
-          if (nextVotes >= 3) {
+          if (nextVotes >= 5) {
             nextStatus = 'Resolved';
           } else if (issue.status === 'Resolved') {
             nextStatus = 'Reported'; // revert back to reported
@@ -412,9 +412,9 @@ function FeedPageContent() {
                           <button
                             onClick={() => handleResolveVote(issue.id)}
                             className={`${styles.resolveVoteBtn} ${issue.userResolvedVoted ? styles.resolveVoteBtnActive : ''}`}
-                            aria-label={`Vote to resolve this issue. Current votes: ${issue.resolvedVotes || 0} out of 3`}
+                            aria-label={`Vote to resolve this issue. Current votes: ${issue.resolvedVotes || 0} out of 5`}
                           >
-                            Resolved? ({issue.resolvedVotes || 0}/3)
+                            Resolved? ({issue.resolvedVotes || 0}/5)
                           </button>
                         )}
                       </div>
