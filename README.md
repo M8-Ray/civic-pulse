@@ -24,27 +24,30 @@ Traditional civic complaint processes are heavily fragmented:
 - Powered by **Google Gemini API** integration.
 - Citizens snap a photo of street damage; CiviLog detects the issue category (e.g., *Infrastructure*, *Sanitation*), estimates severity (*High*, *Medium*, *Low*), and drafts structural details instantly.
 
-### 2. 📍 GPS Proximity Lock
-- Restricts issue marker pin positioning to a strict **100-meter zone** surrounding the submitter's device coordinates, preventing false remote submissions.
+### 2. 📢 Instantly Share ISSUE to Social Media
+- Auto-drafts formatted templates optimized for one-click sharing across **WhatsApp** and **X (Twitter)**, accelerating community awareness.
 
-### 3. 👥 Citizen Resolve & Priority Upvoting
+### 3. 📯 Auto Email Municipal Corporations
+- Auto-addresses formal grievance letters directly to commissioners across **21 Indian municipal corporations** (including PMC, BMC, MCD, BBMP, and more).
+
+### 4. 👥 Citizen Voting
 - Neighbors can view and upvote local reports.
 - Reports gain urgency based on vote counts. Accumulating a **3-vote threshold** automatically updates the ticket's progress and moves it to a resolved state.
 
-### 4. 📯 Municipal Dispatch Router
-- Auto-addresses formal grievance letters directly to commissioners across **21 Indian municipal corporations** (including PMC, BMC, MCD, BBMP, and more).
-
-### 5. 🛡️ Duplicate Prevention
+### 5. 🛡️ Duplicate Issues Prevention
 - Actively scans coordinate quadrants. If an unresolved ticket of the same category exists nearby, the system flags it, prompting users to upvote the existing marker instead of creating duplicate records.
 
-### 6. 📢 Instant Broadcast Intents
-- Auto-drafts formatted templates optimized for one-click sharing across **WhatsApp** and **X (Twitter)**, accelerating community awareness.
+### 6. 📍 GPS Proximity Lock
+- Restricts issue marker pin positioning to a strict **100-meter zone** surrounding the submitter's device coordinates, preventing false remote submissions.
 
 ### 7. 🏆 Gamification Profile
 - Reward system tracking citizen actions. Submitting reports and voting on resolutions earns experience points (**XP**), unlocking profile levels and badges (e.g., *Local Watchdog* to *Neighborhood Hero*).
 
 ### 8. 💬 Integrated AI Assistant
-- Built-in floating chat bubble querying Pune municipal guidelines, reporting policies, coordinate limits, and general platform guides.
+- Built-in floating chat bubble for answering user queries.
+
+### 9. 🏛️ Municipal Authority Management Dashboard
+- A dedicated administrative interface for urban local bodies and municipal engineers to review queued issues, update dispatch statuses, change severities, and log official resolution updates.
 
 ---
 
@@ -59,49 +62,6 @@ Traditional civic complaint processes are heavily fragmented:
 | **Framer Motion** | Micro-animations, slide guides, and card transits |
 | **Vanilla CSS Modules** | Custom design tokens, glassmorphism UI, & responsive dark modes |
 | **Lucide React** | Cohesive vector typography icon sets |
-
----
-
-## 🏢 Supported Local Bodies (21 Cities)
-CiviLog dynamically routes grievances to the matching commissioner desks of major corporations including:
-- **Pune Municipal Corporation (PMC)**
-- **Brihanmumbai Municipal Corporation (BMC)**
-- **Bruhat Bengaluru Mahanagara Palike (BBMP)**
-- **Municipal Corporation of Delhi (MCD)**
-- **Kolkata Municipal Corporation (KMC)**
-- *And 16 other regional urban local bodies.*
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v18 or higher)
-- NPM, Yarn, or PNPM
-
-### Environment Setup
-Create a `.env.local` file in the root directory and configure the following:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-GEMINI_API_KEY=your-gemini-api-key
-```
-
-### Installation
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   git clone <repository-url>
-   cd civilog
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-4. Open [http://localhost:3000](http://localhost:3000) to view the portal.
 
 ---
 
@@ -121,5 +81,3 @@ GEMINI_API_KEY=your-gemini-api-key
 
 ---
 
-## 📜 License
-CiviLog is open-source software licensed under the MIT License.

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { 
   Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame, Camera, BarChart3, 
-  Bot, Share2, Send, CheckCircle2, Mail, FileText, Smartphone, AlertCircle, X 
+  Bot, Share2, Send, CheckCircle2, Mail, FileText, Smartphone, AlertCircle, X, Shield 
 } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Footer from '@/components/Footer';
@@ -345,9 +345,9 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            {/* CARD 8: AI Chatbot Assistant (col3) */}
+            {/* CARD 8: AI Chatbot Assistant (col2) */}
             <motion.div
-              className={`${styles.bentoCard} ${styles.col3}`}
+              className={`${styles.bentoCard} ${styles.col2}`}
               variants={cardVariants}
               whileHover={{ y: -6 }}
             >
@@ -359,6 +359,24 @@ export default function LandingPage() {
                 <h3 className={styles.bentoCardTitle}>CiviLog AI Chatbot</h3>
                 <p className={styles.bentoCardText}>
                   Get immediate answers to platform queries, municipal jurisdiction guidelines, city center support details, and reporting policies using the responsive floating AI support chat bubble.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 9: Authority Dashboard (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Shield size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(124, 255, 103, 0.05)', '--badge-border': '#7cff67', '--badge-color': '#7cff67' } as React.CSSProperties}>Secure Portal</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Authority Dashboard</h3>
+                <p className={styles.bentoCardText}>
+                  A dedicated portal for municipal engineers and local officials to inspect active alerts, verify data, update progress statuses, and log official repairs.
                 </p>
               </div>
             </motion.div>
