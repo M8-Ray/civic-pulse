@@ -103,7 +103,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </button>
 
         <div className={styles.authHeader}>
-          <h2>CivicPulse Login</h2>
+          <h2>CiviLog Login</h2>
           <p>Join to report neighborhood issues and manage your community dashboard</p>
         </div>
 

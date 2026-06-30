@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame, Camera, BarChart3 } from 'lucide-react';
+import { 
+  Sparkles, Map, MapPin, ThumbsUp, ArrowRight, Flame, Camera, BarChart3, 
+  Bot, Share2, Send, CheckCircle2, Mail, FileText, Smartphone, AlertCircle, X 
+} from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Footer from '@/components/Footer';
 import TopBar from '@/components/TopBar';
@@ -31,6 +34,8 @@ export default function LandingPage() {
   // Center coordinate reference to display hotspots
   const centerLat = userLocation?.lat ?? defaultLocation.lat;
   const centerLng = userLocation?.lng ?? defaultLocation.lng;
+
+
 
   // Animation Variants
   const containerVariants: Variants = {
@@ -198,58 +203,166 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        {/* FEATURES GRID */}
+        {/* CLEAN STATIC BENTO GRID SECTION */}
         <motion.section
-          className={styles.featuresGrid}
+          className={styles.bentoSection}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={cardContainerVariants}
         >
-          <motion.div
-            className={styles.featureCard}
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <Sparkles size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Vision AI Autofill</h3>
-            <p className={styles.featureText}>
-              Snap a photo or record a short video. Our local computer vision models detect categories, estimate severity, and autofill location parameters immediately.
-            </p>
-          </motion.div>
+          <div className={styles.bentoTitleGroup}>
+            <motion.h2 className={styles.bentoHeader} variants={cardVariants}>Platform Features</motion.h2>
+            <motion.p className={styles.bentoDesc} variants={cardVariants}>
+              Everything you need to report street hazards, coordinate resolutions, and keep your community safe.
+            </motion.p>
+          </div>
 
-          <motion.div
-            className={styles.featureCard}
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <Map size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Precision Registry</h3>
-            <p className={styles.featureText}>
-              Track street hazards and active resolutions on a vector grid map. Dynamic location sorting prioritizes active issues based on distance from your coordinates.
-            </p>
-          </motion.div>
+          <div className={styles.bentoGrid}>
+            {/* CARD 1: Vision AI Autofill (col2) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col2}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Camera size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(0, 240, 255, 0.05)', '--badge-border': 'var(--accent-cyan)', '--badge-color': 'var(--accent-cyan)' } as React.CSSProperties}>Gemini AI Powered</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Vision AI Autofill</h3>
+                <p className={styles.bentoCardText}>
+                  Snap a photo or upload media of street damage. CiviLog uses Gemini Vision models to automatically analyze, categorize, and draft structured issue descriptions.
+                </p>
+              </div>
+            </motion.div>
 
-          <motion.div
-            className={styles.featureCard}
-            variants={cardVariants}
-            whileHover={{ y: -8, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            <div className={styles.iconBox}>
-              <ThumbsUp size={20} />
-            </div>
-            <h3 className={styles.featureTitle}>Citizen Prioritization</h3>
-            <p className={styles.featureText}>
-              Elevate critical problems with community upvoting. Help municipalities prioritize repairs efficiently by showing where local demand is highest.
-            </p>
-          </motion.div>
+            {/* CARD 2: Proximity Guard (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><MapPin size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(255, 255, 255, 0.03)', '--badge-border': 'var(--border-light)', '--badge-color': 'var(--text-secondary)' } as React.CSSProperties}>GPS Validated</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>100m Proximity Guard</h3>
+                <p className={styles.bentoCardText}>
+                  Restricts incident marker placement to a strict 100-meter radius around the device's true GPS location coordinates.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 3: Citizen Resolve (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><ThumbsUp size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(5, 255, 197, 0.05)', '--badge-border': 'var(--accent-emerald)', '--badge-color': 'var(--accent-emerald)' } as React.CSSProperties}>Community Resolves</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Citizen Resolve</h3>
+                <p className={styles.bentoCardText}>
+                  Citizens upvote reports. Reaching 3 resolution votes automatically marks issues as resolved on the live registry.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 4: Municipal Routing (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Mail size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(99, 102, 241, 0.05)', '--badge-border': '#818cf8', '--badge-color': '#818cf8' } as React.CSSProperties}>Direct Endpoint</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Municipal Routing</h3>
+                <p className={styles.bentoCardText}>
+                  Formats a formal complaint draft and auto-routes it directly to matched commissioners across 21 supported local bodies.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 5: Instant Broadcast (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Share2 size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(255, 255, 255, 0.03)', '--badge-border': 'var(--border-light)', '--badge-color': 'var(--text-secondary)' } as React.CSSProperties}>One-Click Share</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Instant Broadcast</h3>
+                <p className={styles.bentoCardText}>
+                  Auto-draft reports instantly for WhatsApp or X (Twitter) to mobilize community action and speed up repairs.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 6: Duplicate Prevention (col1) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col1}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><AlertCircle size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(255, 65, 108, 0.05)', '--badge-border': '#ff6b8b', '--badge-color': '#ff6b8b' } as React.CSSProperties}>Spam Filter</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Duplicate Prevention</h3>
+                <p className={styles.bentoCardText}>
+                  Scans nearby areas for active reports before submitting, encouraging citizens to upvote existing pins instead of duplication.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 7: Gamification System (col2) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col2}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Flame size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(255, 170, 0, 0.05)', '--badge-border': '#ffbe33', '--badge-color': '#ffbe33' } as React.CSSProperties}>XP Rewards</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>Gamification & Leveling</h3>
+                <p className={styles.bentoCardText}>
+                  Earn experience points (XP) and unlock badges for local watch contributions. Advance through levels from a "Novice Citizen" to a "Neighborhood Hero".
+                </p>
+              </div>
+            </motion.div>
+
+            {/* CARD 8: AI Chatbot Assistant (col3) */}
+            <motion.div
+              className={`${styles.bentoCard} ${styles.col3}`}
+              variants={cardVariants}
+              whileHover={{ y: -6 }}
+            >
+              <div className={styles.cardHeader}>
+                <div className={styles.cardIconBox}><Bot size={20} /></div>
+                <span className={styles.cardBadge} style={{ '--badge-bg': 'rgba(0, 240, 255, 0.05)', '--badge-border': 'var(--accent-cyan)', '--badge-color': 'var(--accent-cyan)' } as React.CSSProperties}>AI Assistant</span>
+              </div>
+              <div className={styles.cardContent}>
+                <h3 className={styles.bentoCardTitle}>CiviLog AI Chatbot</h3>
+                <p className={styles.bentoCardText}>
+                  Get immediate answers to platform queries, municipal jurisdiction guidelines, city center support details, and reporting policies using the responsive floating AI support chat bubble.
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </motion.section>
 
         {/* VISUAL SPOTLIGHTS REGISTRY */}

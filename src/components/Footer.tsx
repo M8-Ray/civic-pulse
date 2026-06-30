@@ -49,7 +49,7 @@ export default function Footer() {
           </a>
         </div>
         <div>Created by Maitreya</div>
-        <div>&copy; 2026 CivicPulse</div>
+        <div>&copy; 2026 CiviLog</div>
       </div>
     </footer>
   );

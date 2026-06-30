@@ -46,8 +46,8 @@ function deg2rad(deg: number): number {
 // Pre-seeded base issues with relative coordinates (offsets from center)
 const BASE_ISSUES = [
   {
-    title: 'Crater-Sized Pothole',
-    description: 'Major pothole in the middle lane causing cars to swerve dangerously. Has already damaged at least two tires today.',
+    title: 'Deep Road Pothole',
+    description: 'Crater-sized road pothole causing dangerous lane swerves. Highly visible risk for two-wheelers at night.',
     category: 'Infrastructure' as IssueCategory,
     severity: 'High' as IssueSeverity,
     status: 'Reported' as IssueStatus,
@@ -55,12 +55,12 @@ const BASE_ISSUES = [
     lngOffset: -0.003,
     upvotes: 42,
     createdAt: '2 hours ago',
-    mediaUrl: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?w=800&auto=format&fit=crop&q=60',
+    mediaUrl: '/pothole.webp',
     mediaType: 'image' as const,
   },
   {
     title: 'Overflowing Garbage Bin',
-    description: 'Public bin is completely overflowing. Trash is spilling onto the pavement and attracting stray cats and rodents. Bad odor in the vicinity.',
+    description: 'Public community garbage bin is completely overflowing. Trash is spilling onto the pavement, creating unsanitary conditions.',
     category: 'Sanitation' as IssueCategory,
     severity: 'Medium' as IssueSeverity,
     status: 'In Progress' as IssueStatus,
@@ -68,25 +68,12 @@ const BASE_ISSUES = [
     lngOffset: 0.006,
     upvotes: 18,
     createdAt: '5 hours ago',
-    mediaUrl: 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=800&auto=format&fit=crop&q=60',
+    mediaUrl: '/garbage.webp',
     mediaType: 'image' as const,
   },
   {
-    title: 'Broken Streetlight Intersection',
-    description: 'Three lights are completely dark at the main crossing. Extremely unsafe for pedestrians crossing at night. High accident risk.',
-    category: 'Safety' as IssueCategory,
-    severity: 'High' as IssueSeverity,
-    status: 'Reported' as IssueStatus,
-    latOffset: 0.002,
-    lngOffset: 0.008,
-    upvotes: 29,
-    createdAt: '1 day ago',
-    mediaUrl: 'https://images.unsplash.com/photo-1509023464722-18d996393ca8?w=800&auto=format&fit=crop&q=60',
-    mediaType: 'image' as const,
-  },
-  {
-    title: 'Fallen Tree Blocking Sidewalk',
-    description: 'A massive branch has snapped off the banyan tree and completely blocked the pedestrian sidewalk and bicycle path.',
+    title: 'Fallen Banyan Tree',
+    description: 'Massive tree branch collapsed onto the walkway. Successfully cleared and hauled away by local hazard response services.',
     category: 'Environment' as IssueCategory,
     severity: 'Low' as IssueSeverity,
     status: 'Resolved' as IssueStatus,
@@ -94,12 +81,12 @@ const BASE_ISSUES = [
     lngOffset: -0.007,
     upvotes: 11,
     createdAt: '2 days ago',
-    mediaUrl: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800&auto=format&fit=crop&q=60',
+    mediaUrl: '/fallen-tree-blocking-the-road.webp',
     mediaType: 'image' as const,
   },
   {
-    title: 'Clogged Storm Drain Flooding',
-    description: 'Plastic waste and leaves have choked the drainage system. Mild rain is causing the road to pool water up to ankle height.',
+    title: 'Main Line Pipe Burst',
+    description: 'Underground municipal water pipeline has burst, causing clean water to flood the street and lowering water pressure in the area.',
     category: 'Infrastructure' as IssueCategory,
     severity: 'High' as IssueSeverity,
     status: 'In Progress' as IssueStatus,
@@ -107,24 +94,21 @@ const BASE_ISSUES = [
     lngOffset: -0.002,
     upvotes: 35,
     createdAt: '8 hours ago',
-    mediaUrl: 'https://images.unsplash.com/photo-1508873699372-7aeab60b44ab?w=800&auto=format&fit=crop&q=60',
+    mediaUrl: '/pipe%20burst.webp',
     mediaType: 'image' as const,
   },
   {
-    title: 'Malfunctioning Traffic Signal',
-    description: 'The traffic signal is stuck on red for Northbound traffic, causing a massive gridlock. Traffic police are directing manually.',
-    category: 'Traffic' as IssueCategory,
-    severity: 'High' as IssueSeverity,
-    status: 'In Progress' as IssueStatus,
-    latOffset: 0.008,
-    lngOffset: 0.002,
-    upvotes: 56,
-    createdAt: '30 mins ago',
-    // Let's use a nice short community dashboard stock video, or standard video URL.
-    // For safety, we can use a sample video from web like a public test video, or an image.
-    // Since browser support for mp4 is universal, we can use a sample mp4.
-    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-in-a-busy-city-street-at-night-40291-large.mp4',
-    mediaType: 'video' as const,
+    title: 'Accumulated Plastic and Trash',
+    description: 'A large pile of plastic bottles, wrappers, and general trash has accumulated along the pedestrian sidewalk, creating an eyesore.',
+    category: 'Sanitation' as IssueCategory,
+    severity: 'Low' as IssueSeverity,
+    status: 'Reported' as IssueStatus,
+    latOffset: 0.002,
+    lngOffset: 0.008,
+    upvotes: 29,
+    createdAt: '1 day ago',
+    mediaUrl: '/trash.webp',
+    mediaType: 'image' as const,
   }
 ];
 
@@ -169,7 +153,7 @@ export function isOfficialEmail(email: string): boolean {
   const domain = email.toLowerCase().split('@')[1];
   if (!domain) return false;
   
-  if (domain === 'example.gov' || domain === 'test.gov' || domain === 'civicpulse.gov') {
+  if (domain === 'example.gov' || domain === 'test.gov' || domain === 'civilog.gov') {
     return true;
   }
 
@@ -193,9 +177,47 @@ export function isOfficialEmail(email: string): boolean {
   );
 }
 
-const LOCAL_STORAGE_KEY = 'civicpulse_issues';
-const UPVOTED_IDS_KEY = 'civicpulse_upvoted_issues';
-const CREATED_IDS_KEY = 'civicpulse_created_issues';
+const LOCAL_STORAGE_KEY = 'civilog_issues';
+const UPVOTED_IDS_KEY = 'civilog_upvoted_issues';
+const CREATED_IDS_KEY = 'civilog_created_issues';
+const DELETED_SEED_IDS_KEY = 'civilog_deleted_seed_issues';
+const SEED_STATUSES_KEY = 'civilog_seed_statuses';
+
+export function getLocalDeletedSeedIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const val = localStorage.getItem(DELETED_SEED_IDS_KEY);
+    return val ? JSON.parse(val) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export function setLocalDeletedSeedIds(ids: string[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(DELETED_SEED_IDS_KEY, JSON.stringify(ids));
+  } catch (e) {}
+}
+
+export function getLocalSeedStatuses(): Record<string, IssueStatus> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const val = localStorage.getItem(SEED_STATUSES_KEY);
+    return val ? JSON.parse(val) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+export function setLocalSeedStatus(id: string, status: IssueStatus): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const current = getLocalSeedStatuses();
+    current[id] = status;
+    localStorage.setItem(SEED_STATUSES_KEY, JSON.stringify(current));
+  } catch (e) {}
+}
 
 function getLocalUpvotedIds(): string[] {
   if (typeof window === 'undefined') return [];
@@ -231,7 +253,7 @@ export function setLocalCreatedIds(ids: string[]): void {
   } catch (e) {}
 }
 
-const RESOLVED_VOTES_IDS_KEY = 'civicpulse_resolved_voted_issues';
+const RESOLVED_VOTES_IDS_KEY = 'civilog_resolved_voted_issues';
 
 export function getLocalResolvedVotedIds(): string[] {
   if (typeof window === 'undefined') return [];
@@ -259,16 +281,44 @@ export function getLocalIssues(centerLat: number, centerLng: number, currentUser
   if (stored) {
     try {
       const parsed = JSON.parse(stored) as Issue[];
-      const createdIds = getLocalCreatedIds();
-      const resolvedVotedIds = getLocalResolvedVotedIds();
-      return parsed.filter(i => i.id).map(i => ({
-        ...i,
-        userUpvoted: currentUserId ? (i.userUpvoted || false) : false,
-        userReported: currentUserId ? createdIds.includes(i.id) : false,
-        resolvedVotes: i.resolvedVotes || 0,
-        userResolvedVoted: currentUserId ? resolvedVotedIds.includes(i.id) : false,
-        city: i.city || getClosestCity(i.lat, i.lng)
-      }));
+      const seedIssues = parsed.filter(i => i.id.startsWith('seed-'));
+      const needsMigration = seedIssues.length < BASE_ISSUES.length || 
+                             seedIssues.some(i => i.mediaUrl.includes('unsplash.com') || i.mediaUrl.startsWith('https://assets.mixkit.co'));
+
+      if (!needsMigration) {
+        const createdIds = getLocalCreatedIds();
+        const resolvedVotedIds = getLocalResolvedVotedIds();
+        return parsed.filter(i => i.id).map(i => {
+          if (i.id.startsWith('seed-')) {
+            const idx = parseInt(i.id.split('-')[1], 10);
+            if (idx >= 0 && idx < BASE_ISSUES.length) {
+              const issue = BASE_ISSUES[idx];
+              const lat = centerLat + issue.latOffset;
+              const lng = centerLng + issue.lngOffset;
+              return {
+                ...i,
+                title: issue.title,
+                description: issue.description,
+                category: issue.category,
+                severity: issue.severity,
+                lat,
+                lng,
+                mediaUrl: issue.mediaUrl,
+                mediaType: issue.mediaType,
+                city: getClosestCity(lat, lng)
+              };
+            }
+          }
+          return {
+            ...i,
+            userUpvoted: currentUserId ? (i.userUpvoted || false) : false,
+            userReported: currentUserId ? createdIds.includes(i.id) : false,
+            resolvedVotes: i.resolvedVotes || 0,
+            userResolvedVoted: currentUserId ? resolvedVotedIds.includes(i.id) : false,
+            city: i.city || getClosestCity(i.lat, i.lng)
+          };
+        });
+      }
     } catch (e) {
       console.error("Failed to parse issues from localStorage:", e);
     }
@@ -439,44 +489,51 @@ export async function getIssues(centerLat: number, centerLng: number, currentUse
 
     if (error) {
       console.error("Error fetching issues from Supabase:", error);
-      return getLocalIssues(centerLat, centerLng);
+      return getLocalIssues(centerLat, centerLng, currentUserId);
     }
 
-    if (!data || data.length === 0) {
-      // Seed default issues into Supabase so it has initial items plotted relative to user
-      const seededDbIssues = BASE_ISSUES.map((issue, idx) => {
-        const id = `seed-${idx}`;
-        const lat = centerLat + issue.latOffset;
-        const lng = centerLng + issue.lngOffset;
-        return {
-          id,
-          title: issue.title,
-          description: issue.description,
-          category: issue.category,
-          severity: issue.severity,
-          status: issue.status,
-          lat,
-          lng,
-          upvotes: issue.upvotes,
-          media_url: issue.mediaUrl,
-          media_type: issue.mediaType,
-          created_at: new Date(Date.now() - (idx * 3600000)).toISOString()
-        };
-      });
+    // 1. Fetch user-reported issues from the database (filtering out any database-level seed issues)
+    const userDbIssues = (data || [] as DbIssue[]).filter(d => !d.id.startsWith('seed-'));
+    const mappedUserIssues = userDbIssues.map(db => mapDbToIssue(db, centerLat, centerLng, currentUserId));
 
-      const { error: insertError } = await supabase
-        .from('issues')
-        .insert(seededDbIssues);
+    // 2. Generate the 5 seed issues client-side, applying user interaction state from localStorage
+    const upvotedIds = getLocalUpvotedIds();
+    const resolvedVotedIds = getLocalResolvedVotedIds();
+    const deletedSeedIds = getLocalDeletedSeedIds();
+    const seedStatuses = getLocalSeedStatuses();
 
-      if (insertError) {
-        console.error("Failed to seed base issues to Supabase:", insertError);
-      } else {
-        console.log("Seeded database with default coordinates.");
-        return seededDbIssues.map(db => mapDbToIssue(db as unknown as DbIssue, centerLat, centerLng, currentUserId));
-      }
-    }
+    const seededIssues: Issue[] = BASE_ISSUES.map((issue, idx) => {
+      const id = `seed-${idx}`;
+      const lat = centerLat + issue.latOffset;
+      const lng = centerLng + issue.lngOffset;
 
-    return (data as DbIssue[]).map(db => mapDbToIssue(db, centerLat, centerLng, currentUserId));
+      const userUpvoted = upvotedIds.includes(id);
+      const userResolvedVoted = resolvedVotedIds.includes(id);
+      const resolvedVotes = userResolvedVoted ? 1 : 0;
+      const status = seedStatuses[id] || ((resolvedVotes >= 3 || issue.status === 'Resolved') ? 'Resolved' : issue.status);
+
+      return {
+        id,
+        title: issue.title,
+        description: issue.description,
+        category: issue.category,
+        severity: issue.severity,
+        status: status as IssueStatus,
+        lat,
+        lng,
+        upvotes: userUpvoted ? issue.upvotes + 1 : issue.upvotes,
+        createdAt: issue.createdAt,
+        mediaUrl: issue.mediaUrl,
+        mediaType: issue.mediaType,
+        userUpvoted,
+        resolvedVotes,
+        userResolvedVoted,
+        city: getClosestCity(lat, lng)
+      };
+    }).filter(issue => !deletedSeedIds.includes(issue.id));
+
+    // 3. Return the combined list of user-reported database issues and client-side seed issues
+    return [...mappedUserIssues, ...seededIssues];
   } catch (e) {
     console.error("Failed to query Supabase, falling back to local storage:", e);
     return getLocalIssues(centerLat, centerLng, currentUserId);
@@ -567,8 +624,20 @@ export async function saveIssue(
 }
 
 export async function toggleUpvoteIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
+  // If it's a seed issue, handle it client-side and return the merged getIssues list!
+  if (id.startsWith('seed-')) {
+    const upvotedIds = getLocalUpvotedIds();
+    const isCurrentlyUpvoted = upvotedIds.includes(id);
+    if (isCurrentlyUpvoted) {
+      setLocalUpvotedIds(upvotedIds.filter(x => x !== id));
+    } else {
+      setLocalUpvotedIds([...upvotedIds, id]);
+    }
+    return getIssues(centerLat, centerLng, currentUserId);
+  }
+
   if (!supabase) {
-    return toggleLocalUpvoteIssue(id, centerLat, centerLng);
+    return toggleLocalUpvoteIssue(id, centerLat, centerLng, currentUserId);
   }
 
   try {
@@ -657,6 +726,18 @@ export function voteLocalIssueResolved(id: string, centerLat: number, centerLng:
 }
 
 export async function voteIssueResolved(id: string, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
+  // If it's a seed issue, handle it client-side and return the merged getIssues list!
+  if (id.startsWith('seed-')) {
+    const resolvedVotedIds = getLocalResolvedVotedIds();
+    const isVoted = resolvedVotedIds.includes(id);
+    if (isVoted) {
+      setLocalResolvedVotedIds(resolvedVotedIds.filter(x => x !== id));
+    } else {
+      setLocalResolvedVotedIds([...resolvedVotedIds, id]);
+    }
+    return getIssues(centerLat, centerLng, currentUserId);
+  }
+
   if (!supabase) {
     return voteLocalIssueResolved(id, centerLat, centerLng, currentUserId);
   }
@@ -712,14 +793,22 @@ export async function voteIssueResolved(id: string, centerLat: number, centerLng
     return getIssues(centerLat, centerLng, currentUserId);
   } catch (e) {
     console.error("Supabase voteIssueResolved failed, falling back to local storage:", e);
-    return voteLocalIssueResolved(id, centerLat, centerLng);
+    return voteLocalIssueResolved(id, centerLat, centerLng, currentUserId);
   }
 }
 
 export function deleteLocalIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Issue[] {
   if (typeof window === 'undefined') return [];
 
-  // 1. Remove from civicpulse_issues
+  // If it's a seed issue, track the deletion client-side
+  if (id.startsWith('seed-')) {
+    const deletedSeeds = getLocalDeletedSeedIds();
+    if (!deletedSeeds.includes(id)) {
+      setLocalDeletedSeedIds([...deletedSeeds, id]);
+    }
+  }
+
+  // 1. Remove from civilog_issues
   const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (stored) {
     try {
@@ -731,7 +820,7 @@ export function deleteLocalIssue(id: string, centerLat: number, centerLng: numbe
     }
   }
 
-  // 2. Remove from civicpulse_created_issues
+  // 2. Remove from civilog_created_issues
   const createdIds = getLocalCreatedIds();
   if (createdIds.includes(id)) {
     setLocalCreatedIds(createdIds.filter(x => x !== id));
@@ -752,6 +841,12 @@ export function deleteLocalIssue(id: string, centerLat: number, centerLng: numbe
 }
 
 export async function deleteIssue(id: string, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
+  // If it's a seed issue, handle it client-side
+  if (id.startsWith('seed-')) {
+    deleteLocalIssue(id, centerLat, centerLng, currentUserId);
+    return getIssues(centerLat, centerLng, currentUserId);
+  }
+
   // Always update local storage first as local state cache / fallback
   deleteLocalIssue(id, centerLat, centerLng, currentUserId);
 
@@ -809,6 +904,12 @@ export function updateLocalIssueStatus(id: string, status: IssueStatus, centerLa
 }
 
 export async function updateIssueStatus(id: string, status: IssueStatus, centerLat: number, centerLng: number, currentUserId?: string): Promise<Issue[]> {
+  // If it's a seed issue, handle it client-side
+  if (id.startsWith('seed-')) {
+    setLocalSeedStatus(id, status);
+    return getIssues(centerLat, centerLng, currentUserId);
+  }
+
   updateLocalIssueStatus(id, status, centerLat, centerLng);
 
   if (!supabase) {

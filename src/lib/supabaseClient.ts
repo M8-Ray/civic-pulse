@@ -13,7 +13,7 @@ const isConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!isConfigured && typeof window !== 'undefined') {
   console.warn(
-    '⚠️ CivicPulse: Supabase credentials are not configured in your .env.local file. ' +
+    '⚠️ CiviLog: Supabase credentials are not configured in your .env.local file. ' +
     'The application will gracefully fall back to client-side localStorage simulation.'
   );
 }

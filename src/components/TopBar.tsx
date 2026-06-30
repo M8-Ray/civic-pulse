@@ -41,7 +41,7 @@ export default function TopBar() {
         <div className={styles.logoIcon}>
           <Flame size={24} fill="var(--accent-cyan)" />
         </div>
-        <span className={styles.logoText}>CivicPulse</span>
+        <span className={styles.logoText}>CiviLog</span>
         <div className={styles.liveBadge}>
           <span className={styles.liveDot}></span>
           <span>LIVE</span>

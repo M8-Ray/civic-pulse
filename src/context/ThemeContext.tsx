@@ -16,7 +16,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check localStorage or system preference
-    const saved = localStorage.getItem('civicpulse-theme') as Theme | null;
+    const saved = localStorage.getItem('civilog-theme') as Theme | null;
     if (saved) {
       setTheme(saved);
       document.documentElement.setAttribute('data-theme', saved);
@@ -30,7 +30,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('civicpulse-theme', newTheme);
+    localStorage.setItem('civilog-theme', newTheme);
   };
 
   return (

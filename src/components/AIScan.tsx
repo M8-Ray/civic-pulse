@@ -48,7 +48,7 @@ export default function AIScan({ mediaUrl, mediaType, detectedType, onComplete, 
     };
 
     // 1. Start printing base initialization logs
-    addLog("⏳ [SYSTEM] Initializing CivicPulse Vision AI Engine...", 'info', 100);
+    addLog("⏳ [SYSTEM] Initializing CiviLog Vision AI Engine...", 'info', 100);
     addLog("🔍 [CAMERA] Reading image frames: metadata scan active...", 'info', 500);
     addLog("🤖 [MODEL] Contacting Gemini Vision API...", 'info', 1000);
     addLog("🔄 [SCAN] Querying neural vision matrix...", 'analysis', 1500);

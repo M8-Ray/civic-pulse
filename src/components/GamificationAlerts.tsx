@@ -58,7 +58,7 @@ export default function GamificationAlerts() {
           </div>
           <div className={styles.xpDetails}>
             <span className={styles.xpReason}>{pointsEarnedToast.reason}</span>
-            <span className={styles.xpSub}>CivicPulse Gamification</span>
+            <span className={styles.xpSub}>CiviLog Gamification</span>
           </div>
         </div>
       )}

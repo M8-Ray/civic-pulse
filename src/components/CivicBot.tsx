@@ -11,7 +11,7 @@ interface Message {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "What is CivicPulse?",
+  "What is CiviLog?",
   "How do I report an issue?",
   "How does resolution voting work?",
   "What cities are supported?"
@@ -22,7 +22,7 @@ export default function CivicBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I am the CivicPulse AI Assistant. 🤖\n\nI can help answer questions about using the app, filing report details, location pin limits, or municipal policies. Ask me anything!"
+      content: "Hello! I am the CiviLog AI Assistant. 🤖\n\nI can help answer questions about using the app, filing report details, location pin limits, or municipal policies. Ask me anything!"
     }
   ]);
   const [inputVal, setInputVal] = useState('');
@@ -110,7 +110,7 @@ export default function CivicBot() {
         onClick={() => setIsOpen(!isOpen)}
         className={`${styles.chatLauncher} ${isOpen ? styles.chatLauncherActive : ''}`}
         aria-label="Open AI Assistant"
-        title="CivicPulse AI Assistant"
+        title="CiviLog AI Assistant"
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
       </button>
@@ -133,7 +133,7 @@ export default function CivicBot() {
                   <Bot size={20} />
                 </div>
                 <div className={styles.titleArea}>
-                  <h4 className={styles.title}>CivicPulse AI</h4>
+                  <h4 className={styles.title}>CiviLog AI</h4>
                   <div className={styles.statusText}>
                     <span className={styles.statusDot}></span>
                     <span>Assistant Online</span>
@@ -199,7 +199,7 @@ export default function CivicBot() {
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask about CivicPulse..."
+                placeholder="Ask about CiviLog..."
                 className={styles.inputField}
                 disabled={isLoading}
               />

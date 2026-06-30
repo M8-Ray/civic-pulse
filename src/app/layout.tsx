@@ -10,7 +10,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 
 export const metadata: Metadata = {
-  title: "CivicPulse — Live Community Issue Tracker",
+  title: "CiviLog — Live Community Issue Tracker",
   description: "Report potholes, garbage pileups, broken streetlights and water leaks. Powered by interactive local maps and AI issue categorization.",
   manifest: "/manifest.json",
   icons: {
@@ -39,7 +39,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var saved = localStorage.getItem('civicpulse-theme');
+                  var saved = localStorage.getItem('civilog-theme');
                   if (saved === 'light' || saved === 'dark') {
                     document.documentElement.setAttribute('data-theme', saved);
                   } else {

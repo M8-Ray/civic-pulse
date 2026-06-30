@@ -45,7 +45,7 @@ export default function LocationPromptModal() {
         
         <p className={styles.locationDesc}>
           {isDenied ? (
-            "CivicPulse needs to know where you are to find nearby community issues. Please enable location permissions for this website in your browser's site settings."
+            "CiviLog needs to know where you are to find nearby community issues. Please enable location permissions for this website in your browser's site settings."
           ) : (
             "We couldn't resolve your coordinates. Please make sure your device's location services (GPS) are turned on and try refreshing."
           )}

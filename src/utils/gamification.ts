@@ -68,7 +68,7 @@ export function calculateLevel(points: number): { level: number; levelName: stri
   return { level: 5, levelName: "Neighborhood Hero", xpNeededForNextLevel: 800, currentLevelMinXP: 800 }; // max level cap for display
 }
 
-const LOCAL_STORAGE_PREFIX = 'civicpulse_gamification_';
+const LOCAL_STORAGE_PREFIX = 'civilog_gamification_';
 
 export function getUserActivity(userId: string): UserActivity {
   if (typeof window === 'undefined') {
