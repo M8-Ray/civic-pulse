@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cuoelpiwhxotegztveka.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_YtTgK34LDLuaCtoBmTt12A_nH680gGJ';
 
 if (supabaseUrl) {
   // Strip trailing '/rest/v1/' or similar that a user might copy from settings
